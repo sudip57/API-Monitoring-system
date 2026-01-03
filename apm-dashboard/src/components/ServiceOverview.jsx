@@ -4,7 +4,6 @@ import {useServiceOverview} from '../scripts/useServiceOverview'
 const serviceOverview = () => {
 const { timeRange } = useAppContext();
 const { data, loading, error } = useServiceOverview(timeRange.from,timeRange.to);
-console.log(data)
 if (!data || data.length === 0) {
     return <div>No service data</div>;
   }

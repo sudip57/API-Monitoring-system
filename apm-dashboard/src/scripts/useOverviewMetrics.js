@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 export function useOverviewMetrics(from,to){
-    console.log("form----------",from)
-    console.log("to----",to)
     const [data,setdata]=useState(null);
     const [loading,setloading] = useState(true);
     const [error, seterror] = useState(false);

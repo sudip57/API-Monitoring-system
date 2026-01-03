@@ -19,7 +19,6 @@ const [searchParams] = useSearchParams();
       );
 
       const data = await res.json();
-      console.log(data)
       // IMPORTANT: your response is an array
       const routeData = data.routeData || [];
 

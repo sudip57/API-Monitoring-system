@@ -9,8 +9,6 @@ const { data, loading, error } = useServiceOverview(timeRange.from,timeRange.to)
 const prevFrom = timeRange.from-30*60*1000;
 const prevTo = timeRange.to-15*60*1000
 const prevData = useServiceOverview(prevFrom,prevTo);
-console.log("prev------",prevData)
-console.log("curr-------",data)
 const [prevMap, setPrevMap] = useState({});
 useEffect(() => {
   if (!prevData.data) return;
@@ -74,17 +72,13 @@ if (!data || data.length === 0) {
                     {svc.errorRate} 
                      {(() => {
                         const prev = prevMap[svc.serviceName];
-                        console.log(prev)
                         if (!prev) return null;
                         const currRate = Number(svc.errorRate);
                         const prevRate = Number(prev.errorRate);
 
                         if (Number.isNaN(currRate) || Number.isNaN(prevRate)) return null;
-                        console.log('curRate-------------',currRate)
-                        console.log('prevRate-------------',prevRate)
                         const diff = currRate - prevRate;
                         if (diff === 0) return null;
-                        console.log('diff----------',diff)
                         const isUp = diff > 0;
 
                         return (

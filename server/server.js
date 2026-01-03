@@ -9,12 +9,7 @@ const timeRangeMiddleware = require("./src/middleware/timeRange");
 
 app.use(cors({
   origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
-app.options("*", cors());
-
 app.use(express.json());
 app.use("/api",timeRangeMiddleware);
 app.use("/api/overview", require("./src/routes/overview"));

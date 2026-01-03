@@ -11,7 +11,7 @@ export function useTimeSeries(from,to){
         try{
             setloading(true);
             const res = await fetch(
-                `https://api-monitoring-system.vercel.app/api/timeSeries?from=${from}&to=${to}`
+                `https://api-monitoring-system-szih.onrender.com/api/timeSeries?from=${from}&to=${to}`
             )
             const json = await res.json();
             if(!cancelled){

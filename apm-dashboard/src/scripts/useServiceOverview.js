@@ -9,7 +9,7 @@ export function useServiceOverview(from,to){
         try{
             setloading(true);
             const res = await fetch(
-                `http://localhost:3000/api/services?from=${from}&to=${to}`
+                `https://api-monitoring-system.vercel.app/api/services?from=${from}&to=${to}`
             )
             const json = await res.json();
             if(!cancelled){

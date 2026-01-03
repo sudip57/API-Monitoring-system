@@ -1,4 +1,3 @@
-const cors = require("cors");
 const dotenv = require('dotenv');
 dotenv.config();
 const express = require("express");
@@ -6,11 +5,6 @@ const app = express();
 const ingestRoute = require("./src/routes/ingest");
 const statsRoute = require("./src/routes/stats");
 const timeRangeMiddleware = require("./src/middleware/timeRange");
-app.use(cors({
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST"],
-  credentials: true
-}));
 app.use(express.json());
 app.use("/api",timeRangeMiddleware);
 app.use("/api/overview", require("./src/routes/overview"));

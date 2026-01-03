@@ -8,13 +8,12 @@ const statsRoute = require("./src/routes/stats");
 const timeRangeMiddleware = require("./src/middleware/timeRange");
 
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://api-monitoring-system.vercel.app/"
-  ],
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+app.options("*", cors());
 
 app.use(express.json());
 app.use("/api",timeRangeMiddleware);

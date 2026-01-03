@@ -1,3 +1,5 @@
+<img width="1905" height="909" alt="image" src="https://github.com/user-attachments/assets/df908690-00a4-452e-8e90-1802a2f64985" />
+
 # Application Performance Monitoring (APM) System
 
 A custom-built Application Performance Monitoring (APM) system that instruments Node.js services to collect, aggregate, and visualize performance metrics such as request latency, error rate, database performance, and request-level traces.

@@ -10,7 +10,7 @@ function normalizeDate(value) {
   return new Date();
 }
 
-function saveEvents(events) {
+async function saveEvents(events) {
   const requests = [];
   const errors = [];
   const childSpans = [];
@@ -78,11 +78,11 @@ function saveEvents(events) {
     }
   }
 
-  if (requests.length) requestEventModel.insertMany(requests);
-  if (errors.length) errorEventModel.insertMany(errors);
-  if (logs.length) logEventModel.insertMany(logs);
-  if (childSpans.length) childSpanEventModel.insertMany(childSpans);
-  if (rootSpans.length) rootSpanEventModel.insertMany(rootSpans);
+if (requests.length) await requestEventModel.insertMany(requests);
+if (errors.length) await errorEventModel.insertMany(errors);
+if (logs.length) await logEventModel.insertMany(logs);
+if (childSpans.length) await childSpanEventModel.insertMany(childSpans);
+if (rootSpans.length) await rootSpanEventModel.insertMany(rootSpans);
 }
 
 // function saveEvents(events) {

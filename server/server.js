@@ -14,7 +14,6 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
-
 app.use(express.json());
 app.use("/api",timeRangeMiddleware);
 app.use("/api/overview", require("./src/routes/overview"));
@@ -26,6 +25,7 @@ app.use("/stats", statsRoute);
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
-app.listen(3000, () => {
-  console.log("http://localhost:3000\n");
-});
+// app.listen(3000, () => {
+//   console.log("http://localhost:3000\n");
+// });
+module.exports = app;

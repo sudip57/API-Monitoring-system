@@ -1,5 +1,5 @@
-const requestEventModel = require("../models/requestEvent");
-const errorEventModel = require("../models/errorEvent");
+const requestEventModel = require("../models/requestEventModel");
+const errorEventModel = require("../models/errorEventModel");
 async function getTotalRequests({ projectKey, serviceName } = {}) {
   const query = {};
   if (projectKey) query.projectKey = projectKey;
@@ -11,11 +11,17 @@ async function getAverageLatency({ projectKey, serviceName } = {}) {
   const match = {};
   if (projectKey) match.projectKey = projectKey;
   if (serviceName) match.serviceName = serviceName;
+
   const result = await requestEventModel.aggregate([
     { $match: match },
-    { $group: { _id: null, avgLatency: { $avg: "$duration" } }}
+    {
+      $group: {
+        _id: null,
+        avgLatency: { $avg: "$request.duration" }
+      }
+    }
   ]);
-  return result.length > 0 ? result[0].avgLatency : 0;
+  return result[0]?.avgLatency ?? 0;
 }
 async function getTotalErrors({ projectKey, serviceName } = {}) {
   const query = {};

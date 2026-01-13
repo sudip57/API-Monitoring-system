@@ -25,7 +25,7 @@ if (!data || data.length === 0) {
   }
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-950 md:w-[50%]">
       {/* Header */}
       <div className="px-5 py-4 border-b border-zinc-800">
         <h2 className="text-sm font-semibold text-zinc-200">

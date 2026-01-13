@@ -33,7 +33,7 @@ function App() {
   return (
     <AppProvider value={contextValue}>
       <Navbar/>
-      <main className="h-screen w-full bg-gradient-to-b from-[#0a0820] via-[#070707] to-[#071e2e] overflow-y-auto">
+      <main className="w-full bg-gradient-to-b from-[#0a0820] via-[#070707] to-[#071e2e]">
         <Outlet />
       </main>
     </AppProvider>

@@ -12,14 +12,17 @@ import ServiceTable from '../components/ServiceTable';
 const DashboardPage = () => {
 const {timeRange} = useAppContext();
   return (
-    <div>
-    <div className="flex flex-col md:flex-row gap-2 md:gap-3 h-[400px] p-2">
+    <div className='flex flex-col gap-2 p-2'>
+    <div className="flex flex-col md:flex-row gap-2 md:gap-3 h-[400px] ">
     <RequestChartCard/>
     <ErrorChartCard/>
     <LatencyChartCard/>
     </div>
     <OverviewKpis/>
-    <ServiceTable/>
+    <div>
+      <ServiceTable/>
+    </div>
+    
     {/* <ServiceOverview/> */}
     <button onClick={()=>timeRange.setRangeMinutes(15)} className='p-2 border-2 rounded-2xl text-white'>last 15 min</button>
     <button onClick={()=>timeRange.setRangeMinutes(1440)} className='p-2 border-2 rounded-2xl text-white'>last 24 min</button>

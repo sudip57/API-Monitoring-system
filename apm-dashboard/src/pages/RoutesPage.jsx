@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate,useSearchParams } from "react-router-dom";
 
 const RoutesPage = () => {
-  const { serviceName } = useParams();
+const { serviceName } = useParams();
 const [searchParams] = useSearchParams();
   const from = Number(searchParams.get("from"));
   const to = Number(searchParams.get("to"));

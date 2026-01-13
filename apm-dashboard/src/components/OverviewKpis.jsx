@@ -5,7 +5,7 @@ export default function OverviewKpis() {
   const { timeRange } = useAppContext()
   const { data, loading, error } = useOverviewMetrics(timeRange.from, timeRange.to);
   return (
-  <div className="flex flex-wrap gap-3 m-2 justify-around">
+  <div className="flex flex-wrap gap-3 justify-around">
     <KpiCard
       title="Total Requests"
       value={data?.totalRequests}

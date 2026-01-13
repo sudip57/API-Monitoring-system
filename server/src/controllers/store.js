@@ -16,7 +16,7 @@ async function saveEvents(events) {
   const childSpans = [];
   const rootSpans = [];
   const logs = [];
-
+  const resourceMetrics = [];
   for (const event of events.data) {
 
     // REQUEST
@@ -76,6 +76,15 @@ async function saveEvents(events) {
         span: event.span,
       });
     }
+    // RESOURCE METRICS
+    if (event.type === "resource-metrics") {
+      resourceMetrics.push({
+        projectKey: events.projectKey,
+        serviceName: events.serviceName,
+        timestamp: normalizeDate(event.timestamp),
+        metrics: event,
+      });
+    }
   }
 
 if (requests.length) await requestEventModel.insertMany(requests);
@@ -83,131 +92,10 @@ if (errors.length) await errorEventModel.insertMany(errors);
 if (logs.length) await logEventModel.insertMany(logs);
 if (childSpans.length) await childSpanEventModel.insertMany(childSpans);
 if (rootSpans.length) await rootSpanEventModel.insertMany(rootSpans);
+if (resourceMetrics.length) {
+  const resourceMetricsModel = require("../models/resourceMetricsModel");
+  await resourceMetricsModel.insertMany(resourceMetrics);
 }
 
-// function saveEvents(events) {
-//     const requests = []
-//     const errors = []
-//     const childSpans = []
-//     const rootSpans = []
-//     const logs = []
-//     console.log("Incoming event to save:", events);
-//     for(const event of events.data) {
-//     if(event.type == "request") {
-//       const doc = {
-//         projectKey:events.projectKey,
-//         serviceName:events.serviceName,
-//         timestamp:new Date(),
-//         request:event,
-//       }
-//       requests.push(doc);
-//       console.log('saved req',event);
-//       console.log("Saved request:", requests);
-//     }
-//     if(event.type == "error") {
-//       console.log("Incoming error event to save:", event);
-//       const doc = {
-//         projectKey:events.projectKey,
-//         serviceName:events.serviceName,
-//         timestamp:new Date(),
-//         error:event,
-//       }
-//       errors.push(doc);
-//       console.log("Saved request error:", errors);
-//     }
-//     if(event.type == "log") {
-//       console.log("--------Incoming logs to save:----", event);
-//       const doc = {
-//         projectKey:events.projectKey,
-//         serviceName:events.serviceName,
-//         timestamp:new Date(),
-//         log:event.log,
-//       }
-//       logs.push(doc);
-//       console.log("Saved request:", logs);
-//     }
-//     if(event.info == "childSpan") {
-//       console.log("Incoming span event to save:", event);
-//       const doc = {
-//         info: event.info,
-//         projectKey:events.projectKey,
-//         serviceName:events.serviceName,
-//         timestamp:new Date(),
-//         span:event.span
-//       };
-//       childSpans.push(doc);
-//       console.log("Saved span request:", childSpans);
-//     }
-//     if(event.info == "rootSpan") {
-//       console.log("Incoming span event to save:", event);
-//       const doc = {
-//         info: event.info,
-//         projectKey:events.projectKey,
-//         serviceName:events.serviceName,
-//         timestamp:new Date(),
-//         span:event.span
-//       };
-//       rootSpans.push(doc);
-//       console.log("Saved span request:", rootSpans);
-//     }
-//   }
-//   try {
-//     if(requests.length>0){
-//       requestEventModel.insertMany(requests).then((res)=>{
-//         console.log(`ingestEvents: inserted ${res.length} request docs`);
-//       }).catch((err)=>{
-//         console.error("Error inserting request events:", err);
-//       });
-//     }
-//     }
-//     catch(err){
-//       console.error("Error in request insertion:", err);
-//     }
-//   try{
-//       if(logs.length>0){
-//         logEventModel.insertMany(logs).then((res)=>{
-//           console.log(`ingestEvents: inserted ${res.length} logs docs`);
-//         }).catch((err)=>{
-//           console.error("Error inserting logs events:", err);
-//         });
-//       }
-//     }
-//     catch(err){
-//       console.error("Error in request insertion:", err);
-//     }
-//   try {
-//     if(errors.length>0){
-//       errorEventModel.insertMany(errors).then((res)=>{
-//         console.log(`ingestEvents: inserted ${res.length} error docs`);
-//       }).catch((err)=>{
-//         console.error("Error inserting error events:", err);
-//       });
-//     }
-//   }catch(err){
-//     console.error("Error in error insertion:", err);
-//   }
-//   try {
-//     if(childSpans.length>0){
-//       childSpanEventModel.insertMany(childSpans).then((res)=>{
-//         console.log(`ingestEvents: inserted ${res.length} child span docs`);
-//       }).catch((err)=>{
-//         console.error("Error inserting child span events:", err);
-//       });
-//     }
-//   }catch(err){
-//       console.error("Error in child span insertion:", err);
-//     }
-//   try {
-//     if(rootSpans.length>0){
-//       rootSpanEventModel.insertMany(rootSpans).then((res)=>{
-//         console.log(`ingestEvents: inserted ${res.length} root span docs`);
-//       }).catch((err)=>{
-//         console.error("Error inserting root span events:", err);
-//       });
-//     }
-//   }catch(err){
-//       console.error("Error in root span insertion:", err);
-//     }
-// }
 
 module.exports = {saveEvents};

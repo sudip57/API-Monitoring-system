@@ -24,8 +24,8 @@ const resourceMetricsSchema = new mongoose.Schema({
   }
 });
 const resourceMetricsModel = mainDB.model(
-  "ResourceMetrics",
+  "resourceMetrics",
   resourceMetricsSchema,
-  "ResourceMetrics"
+  "resourceMetrics"
 );
 module.exports = resourceMetricsModel;

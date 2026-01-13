@@ -96,6 +96,6 @@ if (resourceMetrics.length) {
   const resourceMetricsModel = require("../models/resourceMetricsModel");
   await resourceMetricsModel.insertMany(resourceMetrics);
 }
-
+}
 
 module.exports = {saveEvents};

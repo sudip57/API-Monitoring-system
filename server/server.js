@@ -6,7 +6,6 @@ const app = express();
 const ingestRoute = require("./src/routes/ingest");
 const statsRoute = require("./src/routes/stats");
 const timeRangeMiddleware = require("./src/middleware/timeRange");
-
 app.use(cors({
   origin: "*",
 }));
@@ -16,6 +15,7 @@ app.use("/api/overview", require("./src/routes/overview"));
 app.use("/api/timeSeries", require("./src/routes/timeSeries"));
 app.use("/api/services", require("./src/routes/servicesOverview"));
 app.use("/api/routes", require("./src/routes/routesOverview"));
+app.use("/resourceMetrics", require("./src/routes/resourceMetricsData"));
 app.use("/ingest", ingestRoute);
 app.use("/stats", statsRoute);
 app.get("/", (req, res) => {

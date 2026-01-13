@@ -124,8 +124,8 @@ router.get("/",async(req,res)=>{
                 : +((errors / svc.totalRequests)*100).toFixed(2)
         const status  = getServiceHealth({errorRate,totalRequests})
         const healthScore =
-            (errorRate * 5) +           // errors matter most
-            (svc.p95Latency * 0.01) +   // tail latency matters
+            (errorRate * 5) +           
+            (svc.p95Latency * 0.01) +  
             (rps * 0.1);  
         console.log(status)
         return {

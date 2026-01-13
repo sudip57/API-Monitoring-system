@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 const mainDB = require("../db/db");
 const resourceMetricsSchema = new mongoose.Schema({
-  projectKey: { type: String, required: true },
-  serviceName: { type: String, required: true },
-  timestamp: { type: Date, required: true },
+    timestamp: { type: Date, required: true },
+    meta:{
+        projectKey: { type: String, required: true },
+        serviceName: { type: String, required: true },
+    },
   metrics: {
     cpu: {
       percent: { type: Number, required: true }

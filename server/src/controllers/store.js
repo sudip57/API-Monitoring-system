@@ -79,8 +79,10 @@ async function saveEvents(events) {
     // RESOURCE METRICS
     if (event.type === "resource-metrics") {
       resourceMetrics.push({
-        projectKey: events.projectKey,
-        serviceName: events.serviceName,
+        meta:{
+          projectKey: events.projectKey,
+          serviceName: events.serviceName,
+        },
         timestamp: normalizeDate(event.timestamp),
         metrics: event,
       });

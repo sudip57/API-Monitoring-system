@@ -6,7 +6,7 @@ const resourceMetricsSchema = new mongoose.Schema({
         projectKey: { type: String, required: true },
         serviceName: { type: String, required: true },
     },
-  metrics: {
+    metrics: {
     cpu: {
       percent: { type: Number, required: true }
     },

@@ -1,11 +1,11 @@
-import KpiCard from "./KpiCard";
-import { useOverviewMetrics } from "../scripts/useOverviewMetrics";
-import { useAppContext } from "../context/GlobalAppContext";
+import KpiCard from "./components/KpiCard";
+import { useOverviewMetrics } from "../../services/useOverviewMetrics";
+import { useAppContext } from "../../context/GlobalAppContext";
 export default function OverviewKpis() {
   const { timeRange } = useAppContext()
   const { data, loading, error } = useOverviewMetrics(timeRange.from, timeRange.to);
   return (
-  <div className="flex flex-wrap gap-3 justify-around">
+  <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
     <KpiCard
       title="Total Requests"
       value={data?.totalRequests}

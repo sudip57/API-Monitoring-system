@@ -1,6 +1,7 @@
 import React from 'react'
 import {
-  LineChart,
+  BarChart,
+  Bar,
   Line,
   XAxis,
   YAxis,
@@ -8,8 +9,14 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from 'recharts'
-import { useAppContext } from "../../context/GlobalAppContext"
-import { useTimeSeries } from '../../scripts/useTimeSeries'
+import { useAppContext } from "../../../context/GlobalAppContext"
+import { useTimeSeries } from '../../../services/useTimeSeries'
+
+const formatLatency = (v) => {
+  if (v == null) return '–'
+  if (v < 1000) return `${Math.round(v)} ms`
+  return `${(v / 1000).toFixed(2)} s`
+}
 
 const formatTime = (ts, from, to) => {
   const diff = to - from
@@ -33,14 +40,7 @@ const formatTime = (ts, from, to) => {
   })
 }
 
-const formatErrorRate = (v) => {
-  if (v == null) return '–'
-  if (v < 1) return v.toFixed(2)
-  if (v < 10) return v.toFixed(1)
-  return Math.round(v)
-}
-
-const ErrorChartCard = () => {
+const LatencyChartCard = () => {
   const { timeRange } = useAppContext()
   const { chartData, loading, error } = useTimeSeries(
     timeRange.from,
@@ -71,7 +71,7 @@ const ErrorChartCard = () => {
         flex items-center justify-center
         text-sm text-red-400
       ">
-        Failed to load error metrics
+        Failed to load latency data
       </div>
     )
   }
@@ -103,17 +103,16 @@ const ErrorChartCard = () => {
       {/* Header */}
       <div className="relative flex items-center justify-between mb-2">
         <div className="text-sm font-medium text-white/90">
-          Errors
+          Latency
         </div>
-
         <div className="flex gap-3 text-[11px] text-white/70">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-rose-400" />
-            Error rate %
+            <span className="w-2 h-2 rounded-full bg-indigo-400" />
+            P95
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
-            Error count
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            Avg
           </span>
         </div>
       </div>
@@ -121,7 +120,7 @@ const ErrorChartCard = () => {
       {/* Chart */}
       <div className="flex-1 relative">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData.timeSeries} >
+          <BarChart data={chartData.timeSeries} barGap={4}>
             <XAxis
               dataKey="timestamp"
               tickFormatter={(ts) =>
@@ -131,35 +130,19 @@ const ErrorChartCard = () => {
               fontSize={10}
               tickLine={false}
               axisLine={false}
-              minTickGap={30}
+              minTickGap={24}
             />
 
             <CartesianGrid
-              yAxisId="rate"
               stroke="rgba(255,255,255,0.08)"
               strokeDasharray="3 6"
               vertical={false}
             />
 
-            {/* Error Rate % */}
             <YAxis
-              width={22}
-              yAxisId="rate"
-              tickCount={6}
+              domain={[0, 'auto']}
               stroke="rgba(255,255,255,0.35)"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={formatErrorRate}
-            />
-
-            {/* Error Count */}
-            <YAxis
               width={22}
-              yAxisId="count"
-              orientation="right"
-              tickCount={6}
-              stroke="rgba(255,255,255,0.25)"
               fontSize={10}
               tickLine={false}
               axisLine={false}
@@ -169,11 +152,11 @@ const ErrorChartCard = () => {
             <Tooltip
               labelFormatter={(ts) => new Date(ts).toLocaleString()}
               formatter={(value, name) => {
-                if (name === 'errorRate') {
-                  return [`${formatErrorRate(value)} %`, 'Error rate']
+                if (name === 'p95Latency') {
+                  return [formatLatency(value), 'P95 latency']
                 }
-                if (name === 'errorCount') {
-                  return [`${value} errors`, 'Count']
+                if (name === 'avgLatency') {
+                  return [formatLatency(value), 'Avg latency']
                 }
                 return value
               }}
@@ -185,33 +168,37 @@ const ErrorChartCard = () => {
                 fontSize: '12px',
                 color: '#e5e7eb'
               }}
+               labelStyle={{
+                  color: '#f9fafb',     // top label
+                  fontSize: '12px'
+                }}
+                itemStyle={{
+                  color: '#e5e7eb'      // row text
+                }}
             />
 
-            {/* Error Rate Line */}
+            {/* P95 latency — translucent bars (context only) */}
+            <Bar
+              dataKey="p95Latency"
+              fill="rgba(129,140,248,0.3)"
+              isAnimationActive={false}
+            />
+
+            {/* Avg latency — primary signal */}
             <Line
-              yAxisId="rate"
               type="monotone"
-              dataKey="errorRate"
-              stroke="#fb7185"
+              dataKey="avgLatency"
+              stroke="#34d399"
               strokeWidth={2}
               dot={false}
-            />
-
-            {/* Error Count Line */}
-            <Line
-              yAxisId="count"
-              type="monotone"
-              dataKey="errorCount"
-              stroke="#fbbf24"
-              strokeWidth={1.5}
               strokeDasharray="4 4"
-              dot={false}
+              connectNulls
             />
-          </LineChart>
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </div>
   )
 }
 
-export default ErrorChartCard
+export default LatencyChartCard

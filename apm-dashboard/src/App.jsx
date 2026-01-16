@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
 import { Outlet } from "react-router-dom";
 import './App.css'
-import { useTimeRange } from "./scripts/useTimeRange";
+import { useTimeRange } from "./services/useTimeRange";
 import { AppProvider } from "./context/GlobalAppContext";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/layout/Navbar";
 function App() {
+
   const [rangeMinutes,setRangeMinutes] = useState(1440)
   const {from,to} = useTimeRange(rangeMinutes)
    // ---- Service scope ----
@@ -34,7 +35,7 @@ function App() {
     <AppProvider value={contextValue}>
       <Navbar/>
       <main className="w-full bg-gradient-to-b from-[#0a0820] via-[#070707] to-[#071e2e]">
-        <Outlet />
+        <Outlet  />
       </main>
     </AppProvider>
 

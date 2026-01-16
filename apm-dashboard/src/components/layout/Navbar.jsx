@@ -1,11 +1,18 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navMap = {
+  Dashboard: "/",
+  Services: "/services",
+  Errors: "/errors",
+  Logs: "/logs",
+  Alerts: "/alerts"
+};
   const [open, setOpen] = useState(false);
-  const active = "Overview";
-
-  const navItems = ["Overview", "Services", "Errors", "Logs","Alerts"];
-
+  const [active, setActive] = useState();
+  const navItems = ["Dashboard", "Services", "Errors", "Logs","Alerts"];
+  const navigate = useNavigate();
   return (
     <header className="
   sticky top-0 z-50
@@ -40,13 +47,15 @@ const Navbar = () => {
             <ul className="flex items-center gap-6">
               {navItems.map(item => {
                 const isActive = item === active;
-
                 return (
                   <li
                     key={item}
+                    onClick={() => {
+                      setActive(item)
+                      navigate(navMap[item])
+                    }}
                     className="relative cursor-pointer font-medium"
                   >
-                    {/* Glow layer */}
                     <span
                         className={`
                             absolute inset-0 select-none
@@ -60,8 +69,6 @@ const Navbar = () => {
                         >
                         {item}
                     </span>
-
-                    {/* Actual text */}
                     <span
                       className={`
                         relative text-[15px] transition-colors duration-200
@@ -74,8 +81,6 @@ const Navbar = () => {
                     >
                       {item}
                     </span>
-
-                    {/* Active underline */}
                     {isActive && (
                       <span className="absolute left-0 -bottom-2 h-[2px] w-full bg-indigo-500 rounded-full" />
                     )}
@@ -86,7 +91,6 @@ const Navbar = () => {
           </nav>
         </div>
 
-        {/* RIGHT: Account */}
         <div className="flex items-center gap-3">
           <div className="hidden sm:block text-right leading-tight">
             <p className="text-xs text-slate-400">Workspace</p>
@@ -101,7 +105,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
       <div
         className={`
           sm:hidden absolute left-3 top-16 w-[220px] rounded-md
@@ -125,7 +128,6 @@ const Navbar = () => {
                     className="relative px-4 py-2 cursor-pointer"
                     >
                 <div className="relative inline-flex items-center">
-                        {/* Glow layer */}
                         <span
                         className={`
                             absolute inset-0 flex items-center justify-center
@@ -136,7 +138,6 @@ const Navbar = () => {
                         {item}
                         </span>
 
-                        {/* Actual text */}
                         <span
                         className={`
                             relative text-sm leading-none transition-colors

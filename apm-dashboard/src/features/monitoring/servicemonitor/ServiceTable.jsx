@@ -1,31 +1,17 @@
 import React from "react";
-import { useAppContext } from "../context/GlobalAppContext";
-import {useServiceOverview} from '../scripts/useServiceOverview'
+import { useAppContext } from "../../../context/GlobalAppContext";
+import {useServiceOverview} from '../../../services/useServiceOverview'
 import { useState,useEffect } from "react";
 const ServiceTable = () => {
 const { timeRange } = useAppContext();
 const now = Date.now()
 const { data, loading, error } = useServiceOverview(timeRange.from,timeRange.to);
-const prevFrom = timeRange.from-30*60*1000;
-const prevTo = timeRange.to-15*60*1000
-const prevData = useServiceOverview(prevFrom,prevTo);
-const [prevMap, setPrevMap] = useState({});
-useEffect(() => {
-  if (!prevData.data) return;
-  const map = {};
-  prevData.data.services.forEach(s => {
-    map[s.serviceName] = s;
-  });
-
-  setPrevMap(map);
-}, [prevData]);
-
 if (!data || data.length === 0) {
     return <div>No service data</div>;
   }
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950 md:w-[50%]">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-950 h-[70%]">
       {/* Header */}
       <div className="px-5 py-4 border-b border-zinc-800">
         <h2 className="text-sm font-semibold text-zinc-200">
@@ -70,28 +56,6 @@ if (!data || data.length === 0) {
 
                 <td className="px-5 py-4 text-right text-zinc-300">
                     {svc.errorRate} 
-                     {(() => {
-                        const prev = prevMap[svc.serviceName];
-                        if (!prev) return null;
-                        const currRate = Number(svc.errorRate);
-                        const prevRate = Number(prev.errorRate);
-
-                        if (Number.isNaN(currRate) || Number.isNaN(prevRate)) return null;
-                        const diff = currRate - prevRate;
-                        if (diff === 0) return null;
-                        const isUp = diff > 0;
-
-                        return (
-                        <span
-                            className={`ml-2 text-xs ${
-                            isUp ? "text-red-400" : "text-green-400"
-                            }`}
-                        >
-                            {isUp ? "↑" : "↓"} {Math.abs(diff).toFixed(2)}%
-                        </span>
-                        );
-                    })()}
-
                 </td>
 
                 <td className="px-5 py-4 text-right text-zinc-300">

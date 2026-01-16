@@ -7,8 +7,8 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from 'recharts'
-import { useAppContext } from "../../context/GlobalAppContext"
-import { useTimeSeries } from '../../scripts/useTimeSeries'
+import { useAppContext } from "../../../context/GlobalAppContext"
+import { useTimeSeries } from '../../../services/useTimeSeries'
 
 const formatRps = (v) => {
   if (v == null) return '–'

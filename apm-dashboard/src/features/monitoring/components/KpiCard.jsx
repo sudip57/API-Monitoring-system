@@ -55,8 +55,8 @@ const KpiCard = ({
   };
 
   const base =
-    "min-w-[200px] min-h-[140px] flex-1 rounded-xl " +
-    "bg-white/5 backdrop-blur-xl " +
+    " min-h-[140px] flex-1 rounded-xl " +
+    "bg-white/5 backdrop-blur-xl" +
     "border border-white/10";
 
   if (loading) {
@@ -85,7 +85,8 @@ const KpiCard = ({
   return (
     <div
       className={`
-        ${base} p-4
+        ${base} 
+        p-3
         shadow-lg shadow-black/30
         transition-all duration-300 ease-out
         hover:border-white/30

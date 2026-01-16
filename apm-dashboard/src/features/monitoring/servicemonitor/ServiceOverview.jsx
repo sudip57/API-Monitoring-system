@@ -1,6 +1,6 @@
-import { useAppContext } from "../context/GlobalAppContext";
-import ServiceKpiCard from './ServiceKpiCard';
-import {useServiceOverview} from '../scripts/useServiceOverview'
+import { useAppContext } from "../../../context/GlobalAppContext";
+import ServiceKpiCard from './components/ServiceKpiCard';
+import {useServiceOverview} from '../../../services/useServiceOverview'
 const serviceOverview = () => {
 const { timeRange } = useAppContext();
 const { data, loading, error } = useServiceOverview(timeRange.from,timeRange.to);

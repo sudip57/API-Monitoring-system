@@ -5,7 +5,6 @@ const resourceMetricsSchema = new mongoose.Schema({
     meta:{
         projectKey: { type: String, required: true },
         serviceName: { type: String, required: true },
-        instanceId: { type: String, required: true }
     },
     metrics: {
     cpu: {

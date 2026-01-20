@@ -11,6 +11,7 @@ import {
 const WINDOW_MS = 60 * 1000; // 60s window
 
 export function CpuChart({ data }) {
+  console.log("CpuChart data:", data);
   const chartData = data.map(d => ({
     time: new Date(d.timestamp).getTime(),
     cpu: d.metrics.cpu.percent

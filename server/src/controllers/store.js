@@ -82,6 +82,7 @@ async function saveEvents(events) {
         meta:{
           projectKey: events.projectKey,
           serviceName: events.serviceName,
+          instanceId: events.instanceId
         },
         timestamp: normalizeDate(event.timestamp),
         metrics: event,

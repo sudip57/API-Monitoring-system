@@ -5,6 +5,7 @@ const axios = require("axios");
 APM.initializeAPM({
   projectKey: "test-project",
   serviceName: "service-a",
+  instanceId: "node-root-1",
   env: "development",
 });
 const app = express();

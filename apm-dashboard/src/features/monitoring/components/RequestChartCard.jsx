@@ -1,3 +1,4 @@
+import React, { useState, useRef, useEffect } from 'react'
 import {
   AreaChart,
   Area,
@@ -7,6 +8,7 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from 'recharts'
+import { Activity, ChevronDown, Clock, Info, RefreshCw } from 'lucide-react'
 import { useAppContext } from "../../../context/GlobalAppContext"
 import { useTimeSeries } from '../../../services/useTimeSeries'
 
@@ -19,188 +21,134 @@ const formatRps = (v) => {
 
 const formatTime = (ts, from, to) => {
   const diff = to - from
-
   if (diff <= 60 * 60 * 1000) {
-    return new Date(ts).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
-
-  if (diff <= 24 * 60 * 60 * 1000) {
-    return new Date(ts).toLocaleTimeString([], {
-      hour: '2-digit'
-    })
-  }
-
-  return new Date(ts).toLocaleDateString([], {
-    month: 'short',
-    day: 'numeric'
-  })
+  return new Date(ts).toLocaleDateString([], { month: 'short', day: 'numeric' })
 }
 
 const RequestChartCard = () => {
-  const { timeRange } = useAppContext()
-  const { chartData, loading, error } = useTimeSeries(
-    timeRange.from,
-    timeRange.to
-  )
+  const { timeRange, setTimeRange } = useAppContext()
+  const { chartData, loading, error } = useTimeSeries(timeRange.from, timeRange.to)
+  
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useRef(null)
 
-  if (loading) {
-    return (
-      <div className="
-        h-[320px] w-[400px]
-        rounded-xl
-        bg-white/5
-        backdrop-blur-xl
-        border border-white/10
-        animate-pulse
-      " />
-    )
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const options = [
+    { label: 'Last 15 minutes', value: 15 },
+    { label: 'Last 60 minutes', value: 60 },
+    { label: 'Last 24 hours', value: 1440 },
+  ]
+
+  const handleRefresh = (minutes) => {
+    const now = Date.now()
+    const from = now - (minutes * 60 * 1000)
+    timeRange.setRangeMinutes(minutes)
+    if (setTimeRange) {
+      setTimeRange({ from, to: now })
+    }
+    
+    setIsMenuOpen(false)
   }
 
-  if (error) {
-    return (
-      <div className="
-        h-[320px] w-[400px]
-        rounded-xl
-        bg-white/5
-        backdrop-blur-xl
-        border border-red-500/20
-        flex items-center justify-center
-        text-sm text-red-400
-      ">
-        Failed to load data
-      </div>
-    )
+  if (loading && !chartData) {
+    return <div className="h-[350px] w-full rounded-xl bg-white/5 border border-white/10 animate-pulse" />
   }
 
   return (
-    <div className="
-      w-[100%] h-[100%]
-      rounded-xl
-      bg-white/5
-      backdrop-blur-xl
-      border border-white/10
-      shadow-xl shadow-black/40
-      p-3
-      flex flex-col
-      relative
-      overflow-hidden
-    ">
-      {/* Glass highlight */}
-      <div className="
-        pointer-events-none
-        absolute inset-0
-        rounded-xl
-        bg-gradient-to-br
-        from-white/10
-        via-transparent
-        to-transparent
-      " />
-
-      {/* Header */}
-      <div className="relative flex items-center justify-between mb-2">
-        <div className="text-sm font-medium text-white/90">
-          Requests
+    <div className="w-full  min-h-[350px] rounded-xl bg-[#0f0f15] border border-white/10 shadow-2xl p-5 flex flex-col relative overflow-visible">
+      
+      <div className="relative flex items-center justify-between mb-6 z-30">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-violet-500/10 rounded-lg border border-violet-500/20">
+            <Activity size={18} className="text-violet-400" />
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+              Request Traffic
+              {loading && <RefreshCw size={12} className="animate-spin text-violet-400" />}
+            </div>
+            <div className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
+              Real-time Ingress
+            </div>
+          </div>
         </div>
 
-        <div className="flex gap-3 text-[11px] text-white/70">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-violet-400" />
-            Rate (RPS)
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-sky-400" />
-            Count
-          </span>
+        <div className="relative" ref={menuRef}>
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[11px] font-medium text-white/70 hover:bg-white/10 transition-all"
+          >
+            <Clock size={14} className="text-violet-400" />
+            {options.find(o => o.value === timeRange.selectedMinutes)?.label || 'Select Interval'}
+            <ChevronDown size={14} className={`transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isMenuOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-[#1a1a24] border border-white/10 rounded-xl shadow-2xl py-1 z-50 overflow-hidden backdrop-blur-xl">
+              {options.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => handleRefresh(opt.value)}
+                  className="w-full text-left px-4 py-2.5 text-[11px] text-white/70 hover:bg-violet-600 hover:text-white transition-colors flex justify-between items-center"
+                >
+                  {opt.label}
+                  <span className="text-[9px] opacity-40">{opt.value}m</span>
+                </button>
+              ))}
+              <div className="border-t border-white/5 mt-1">
+                <button 
+                  onClick={() => handleRefresh(timeRange.selectedMinutes || 15)}
+                  className="w-full text-left px-4 py-2 text-[10px] text-violet-400 hover:bg-white/5 transition-colors flex items-center gap-2"
+                >
+                  <RefreshCw size={10} />Refresh Now
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative z-10">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData.timeSeries}>
+          <AreaChart data={chartData?.timeSeries || []} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}>
+            <defs>
+              <linearGradient id="reqRate" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+
             <XAxis
               dataKey="timestamp"
-              tickFormatter={(ts) =>
-                formatTime(ts, timeRange.from, timeRange.to)
-              }
-              stroke="rgba(255,255,255,0.4)"
+              tickFormatter={(ts) => formatTime(ts, timeRange.from, timeRange.to)}
+              stroke="rgba(255,255,255,0.2)"
               fontSize={10}
               tickLine={false}
               axisLine={false}
-              minTickGap={30}
             />
 
-            <CartesianGrid
-              yAxisId="rate"
-              stroke="rgba(255,255,255,0.08)"
-              strokeDasharray="3 6"
-              vertical={false}
-            />
-
-            <YAxis
-              yAxisId="rate"
-              width={28}
-              tickCount={6}
-              stroke="rgba(255,255,255,0.35)"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={formatRps}
-            />
-
-            <YAxis
-              yAxisId="count"
-              width={28}
-              orientation="right"
-              tickCount={6}
-              stroke="rgba(255,255,255,0.25)"
-              fontSize={10}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(v) => Math.round(v)}
-            />
+            <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" vertical={false} />
+            <YAxis yAxisId="rate" tickCount={5} stroke="rgba(255,255,255,0.2)" fontSize={9} tickLine={false} axisLine={false} tickFormatter={formatRps} />
+            <YAxis yAxisId="count" orientation="right" tickCount={5} stroke="rgba(255,255,255,0.2)" fontSize={9} tickLine={false} axisLine={false} />
 
             <Tooltip
-              labelFormatter={(ts) => new Date(ts).toLocaleString()}
-              formatter={(value, name) => {
-                if (name === 'requestRate') {
-                  return [`${formatRps(value)} RPS`, 'Rate']
-                }
-                if (name === 'requestCount') {
-                  return [`${value} req`, 'Count']
-                }
-                return value
-              }}
-              contentStyle={{
-                backgroundColor: 'rgba(24,24,27,0.65)',
-                backdropFilter: 'blur(14px)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '10px',
-                fontSize: '12px',
-                color: '#e5e7eb'
-              }}
+              contentStyle={{ backgroundColor: '#0f0f15', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '11px' }}
+              formatter={(value, name) => name === 'requestRate' ? [`${formatRps(value)} RPS`, 'Rate'] : [`${value} req`, 'Count']}
             />
 
-            <Area
-              yAxisId="rate"
-              type="monotone"
-              dataKey="requestRate"
-              stroke="#8b5cf6"
-              fill="#8b5cf6"
-              fillOpacity={0.35}
-            />
-
-            <Area
-              yAxisId="count"
-              type="monotone"
-              dataKey="requestCount"
-              stroke="#38bdf8"
-              fill="#38bdf8"
-              fillOpacity={0.25}
-            />
+            <Area yAxisId="rate" type="monotone" dataKey="requestRate" stroke="#8b5cf6" strokeWidth={2} fill="url(#reqRate)" isAnimationActive={false} />
+            <Area yAxisId="count" type="monotone" dataKey="requestCount" stroke="#38bdf8" strokeWidth={1} fillOpacity={0.05} fill="#38bdf8" isAnimationActive={false} />
           </AreaChart>
         </ResponsiveContainer>
       </div>

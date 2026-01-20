@@ -10,7 +10,6 @@ export default function ResourceMonitor() {
   return (
     <div className="w-full">
       <div className="grid grid-cols-1 gap-2">
-        <ResourceMetricCard latest={latest.latest} series={series}/>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CpuChart data={latest.timeSeries} />
           <MemoryChart data={latest.timeSeries} />

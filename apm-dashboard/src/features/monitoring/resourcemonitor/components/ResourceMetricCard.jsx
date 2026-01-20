@@ -1,5 +1,5 @@
 export function ResourceMetricCard({ latest }) {
-  const m = latest.metrics;
+  const m = latest[0].metrics;
 
   return (
     <div className="rounded-xl p-3 shadow-xl ">

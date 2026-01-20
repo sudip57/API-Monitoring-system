@@ -34,7 +34,7 @@ function App() {
   return (
     <AppProvider value={contextValue}>
       <Navbar/>
-      <main className="w-full bg-gradient-to-b from-[#0a0820] via-[#070707] to-[#071e2e]">
+      <main className="w-full bg-gradient-to-b from-[#0a0820] via-[#070707] to-[#071e2e] border-amber-700 overflow-auto">
         <Outlet  />
       </main>
     </AppProvider>

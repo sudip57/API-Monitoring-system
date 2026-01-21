@@ -22,8 +22,10 @@ async function saveEvents(events) {
     // REQUEST
     if (event.type === "request") {
       requests.push({
-        projectKey: events.projectKey,
-        serviceName: events.serviceName,
+        meta:{
+          projectKey: events.projectKey,
+          serviceName: events.serviceName,
+        },
         timestamp: normalizeDate(event.timestamp),
         request: {
           ...event,
@@ -35,8 +37,10 @@ async function saveEvents(events) {
     // ERROR
     if (event.type === "error") {
       errors.push({
-        projectKey: events.projectKey,
-        serviceName: events.serviceName,
+        meta:{
+          projectKey: events.projectKey,
+          serviceName: events.serviceName,
+        },
         timestamp: normalizeDate(event.timestamp),
         error: {
           ...event,
@@ -48,8 +52,10 @@ async function saveEvents(events) {
     // LOG
     if (event.type === "log") {
       logs.push({
-        projectKey: events.projectKey,
-        serviceName: events.serviceName,
+        meta:{
+          projectKey: events.projectKey,
+          serviceName: events.serviceName,
+        },
         timestamp: normalizeDate(event.timestamp),
         log: event.log,
       });
@@ -59,8 +65,10 @@ async function saveEvents(events) {
     if (event.info === "childSpan") {
       childSpans.push({
         info: event.info,
-        projectKey: events.projectKey,
-        serviceName: events.serviceName,
+        meta:{
+          projectKey: events.projectKey,
+          serviceName: events.serviceName,
+        },
         timestamp: normalizeDate(event.span?.startTime),
         span: event.span,
       });
@@ -70,8 +78,10 @@ async function saveEvents(events) {
     if (event.info === "rootSpan") {
       rootSpans.push({
         info: event.info,
-        projectKey: events.projectKey,
-        serviceName: events.serviceName,
+        meta:{
+          projectKey: events.projectKey,
+          serviceName: events.serviceName,
+        },
         timestamp: normalizeDate(event.span?.startTime),
         span: event.span,
       });
@@ -82,7 +92,6 @@ async function saveEvents(events) {
         meta:{
           projectKey: events.projectKey,
           serviceName: events.serviceName,
-          instanceId: events.instanceId
         },
         timestamp: normalizeDate(event.timestamp),
         metrics: event,

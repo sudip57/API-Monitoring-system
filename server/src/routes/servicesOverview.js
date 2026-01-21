@@ -43,7 +43,7 @@ router.get("/",async(req,res)=>{
     const [reqPerService,errorPerService,throughputPerService] = await Promise.all([
         requestEventModel.aggregate([
             {$match:{
-                projectKey:"test-project",
+                "meta.projectkey":"test-project",
                 "request.timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{

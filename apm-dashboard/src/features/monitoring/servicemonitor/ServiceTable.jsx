@@ -5,6 +5,7 @@ import { useAppContext } from "../../../context/GlobalAppContext";
 const ServiceTable = () => {
   const { timeRange } = useAppContext();
   const { data, loading, error } = useServiceOverview(timeRange.from, timeRange.to);
+  console.log("data----------",data);
 
   if (loading && !data) {
     return (

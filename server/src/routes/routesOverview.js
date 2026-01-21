@@ -11,8 +11,8 @@ router.get("/",async(req,res)=>{
         requestEventModel.aggregate([
             {
                 $match: {
-                projectKey:"test-project",
-                serviceName,
+                "meta.projectKey":"test-project",
+                "meta.serviceName":serviceName,
                 "request.url": { $ne: null },
                 "request.timestamp": { $gte: from, $lte: to }
                 }

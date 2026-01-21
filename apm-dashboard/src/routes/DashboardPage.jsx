@@ -9,16 +9,23 @@ import ErrorChartCard from '../features/monitoring/components/ErrorChartCard'
 import LatencyChartCard from '../features/monitoring/components/LatencyChartCard'
 import ServiceTable from '../features/monitoring/servicemonitor/ServiceTable';
 import ResourceMonitor from '../features/monitoring/resourcemonitor/ResourceMonitor';
+import CombinedHealthRadar from '../features/monitoring/components/CombinedHealthRadar';
 const DashboardPage = () => {
 const {timeRange} = useAppContext();
   return (
-    <div className='flex flex-col gap-[30px] p-2'>
+    <div className='flex flex-col gap-[30px] p-4 mt-4'>
     <OverviewKpis/>
     <div className="flex flex-col md:flex-row gap-2 md:gap-3">
       <RequestChartCard/>
       <ServiceTable/>
     </div>
-    <ResourceMonitor/>
+    <div className='grid md:grid-cols-2 gap-4'>
+      <div className='grid md:grid-cols-2 gap-4'>
+        <ErrorChartCard/>
+        <LatencyChartCard/>
+      </div>
+      <ResourceMonitor/>
+    </div>
     </div>
   )
 }

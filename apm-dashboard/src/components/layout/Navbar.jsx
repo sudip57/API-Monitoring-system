@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import { useState ,useEffect,useRef} from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useAppContext } from "../../context/GlobalAppContext"
+import { useTimeSeries } from '../../services/useTimeSeries'
+import { Activity, ChevronDown, Clock, RefreshCw } from 'lucide-react'
 const Navbar = () => {
   const navMap = {
   Dashboard: "/",
@@ -13,6 +15,36 @@ const Navbar = () => {
   const [active, setActive] = useState();
   const navItems = ["Dashboard", "Services", "Errors", "Logs","Alerts"];
   const navigate = useNavigate();
+    const { timeRange, setTimeRange } = useAppContext()
+    const { chartData, loading, error } = useTimeSeries(timeRange.from, timeRange.to)
+    
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const menuRef = useRef(null)
+   useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (menuRef.current && !menuRef.current.contains(event.target)) {
+          setIsMenuOpen(false)
+        }
+      }
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
+  
+    const options = [
+      { label: 'Last 15 minutes', value: 15 },
+      { label: 'Last 60 minutes', value: 60 },
+      { label: 'Last 24 hours', value: 1440 },
+    ]
+  
+    const handleRefresh = (minutes) => {
+      const now = Date.now()
+      const from = now - (minutes * 60 * 1000)
+      timeRange.setRangeMinutes(minutes)
+      if (setTimeRange) {
+        setTimeRange({ from, to: now })
+      }
+      setIsMenuOpen(false)
+    }
   return (
     <header className="
   sticky top-0 z-50
@@ -90,9 +122,41 @@ const Navbar = () => {
             </ul>
           </nav>
         </div>
-
+       
         <div className="flex items-center gap-3">
-          <div className="hidden sm:block text-right leading-tight">
+        <div className="relative" ref={menuRef}>
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] md:text-[11px] font-medium text-white/90 hover:bg-white/10 transition-all"
+          >
+            <Clock size={12} className="text-violet-400" />
+            <span>{options.find(o => o.value === timeRange.selectedMinutes)?.label.replace('Last ', '') || 'Interval'}</span>
+            <ChevronDown size={12} className={isMenuOpen ? 'rotate-180' : ''} />
+          </button>
+          {isMenuOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-[#1a1a24] border border-white/10 rounded-xl shadow-2xl py-1 z-50 overflow-hidden backdrop-blur-xl">
+              {options.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => handleRefresh(opt.value)}
+                  className="w-full text-left px-4 py-2.5 text-[11px] text-white/70 hover:bg-violet-600 hover:text-white transition-colors flex justify-between items-center"
+                >
+                  {opt.label}
+                  <span className="text-[9px] opacity-40">{opt.value}m</span>
+                </button>
+              ))}
+              <div className="border-t border-white/5 mt-1">
+                <button 
+                  onClick={() => handleRefresh(timeRange.selectedMinutes || 15)}
+                  className="w-full text-left px-4 py-2 text-[10px] text-violet-400 hover:bg-white/5 transition-colors flex items-center gap-2"
+                >
+                  <RefreshCw size={10} />Refresh Now
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="hidden sm:block text-right leading-tight">
             <p className="text-xs text-slate-400">Workspace</p>
             <p className="text-sm font-medium text-white">
               Default

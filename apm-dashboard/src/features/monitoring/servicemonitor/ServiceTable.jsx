@@ -1,26 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useServiceOverview } from '../../../services/useServiceOverview'
 import { Server, Activity, AlertCircle, ChevronRight, RefreshCw } from "lucide-react";
-
+import { useAppContext } from "../../../context/GlobalAppContext";
 const ServiceTable = () => {
-  const LOOKBACK_MS = 30 * 60 * 1000;
-  const REFRESH_INTERVAL_MS = 10000; 
-  const [localRange, setLocalRange] = useState({
-    from: Date.now() - LOOKBACK_MS,
-    to: Date.now()
-  });
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = Date.now();
-      setLocalRange({
-        from: now - LOOKBACK_MS,
-        to: now
-      });
-    }, REFRESH_INTERVAL_MS);
-
-    return () => clearInterval(timer);
-  }, []);
-  const { data, loading, error } = useServiceOverview(localRange.from, localRange.to);
+  const { timeRange } = useAppContext();
+  const { data, loading, error } = useServiceOverview(timeRange.from, timeRange.to);
 
   if (loading && !data) {
     return (

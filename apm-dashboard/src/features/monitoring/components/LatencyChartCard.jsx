@@ -20,7 +20,6 @@ const formatLatency = (v) => {
 
 const formatTime = (ts, from, to) => {
   const diff = to - from
-
   if (diff <= 60 * 60 * 1000) {
     return new Date(ts).toLocaleTimeString([], {
       hour: '2-digit',
@@ -78,7 +77,7 @@ const LatencyChartCard = () => {
 
   return (
     <div className="
-      w-[100%] h-[100%]
+      w-[100%] min-h-[300px]
       rounded-xl
       bg-white/5
       backdrop-blur-xl

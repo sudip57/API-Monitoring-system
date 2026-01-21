@@ -4,9 +4,10 @@ const mainDB = require("../db/db");
 const { Schema } = mongoose;
 
 const ErrorEventSchema = new Schema(
-  {
+  {   meta:{
       projectKey: { type: String, required: true, index: true },
       serviceName: { type: String, required: true, index: true },
+      },
       timestamp: { type: Date, required: true, index: true },                       
       error: { type: mongoose.Schema.Types.Mixed }
     },{ strict: false }

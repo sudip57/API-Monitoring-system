@@ -24,7 +24,10 @@ export function CpuChart({ data }) {
       const ts = Math.floor(new Date(item.timestamp).getTime() / 2000) * 2000;
 
       if (!buckets[ts]) buckets[ts] = { time: ts };
-      buckets[ts][sName] = item.metrics?.cpu?.percent || 0;
+      
+      // Ensure no negative values are stored in the data
+      const cpuVal = item.metrics?.cpu?.percent || 0;
+      buckets[ts][sName] = Math.max(0, cpuVal); 
     });
 
     return {
@@ -58,13 +61,11 @@ export function CpuChart({ data }) {
 
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-
           <CartesianGrid
-            stroke="#F9F6EE" 
-            strokeOpacity={0.5}
-            strokeDasharray="1 1"
+            stroke="#ffffff" 
+            strokeOpacity={0.5} // Subtle grid lines
+            strokeDasharray="3 3"
             vertical={true}
-            horizontal={true}
           />
 
           <XAxis
@@ -78,29 +79,32 @@ export function CpuChart({ data }) {
           />
 
           <YAxis
-            domain={[0, 100]}
+            yAxisId={0}
+            domain={[0, 100]} // Fixed range
+            ticks={[0, 20, 40, 60, 80, 100]} // Fixed grid positions
+            allowDataOverflow={true} // Clips any data outside 0-100
             tick={{ fill: "#71717a", fontSize: 10 }}
             tickFormatter={v => `${v}%`}
             axisLine={false}
             tickLine={false}
-            tickCount={6}
           />
 
           <Tooltip
-            cursor={{ stroke: '#3f3f46', strokeWidth: 1.5 }}
+            cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1.5 }}
             contentStyle={{
-              backgroundColor: "#09090b",
-              border: "1px solid #3f3f46",
+              backgroundColor: "#16161e",
+              border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: "8px",
               fontSize: "12px",
               padding: "12px",
+              color: "#ffffff" // Header text to white
             }}
-            itemStyle={{ padding: "2px 0", fontWeight: "600" }}
+            itemStyle={{ color: "#ffffff", padding: "2px 0" }} // Metric text to white
             labelStyle={{ color: "#a1a1aa", marginBottom: "8px", fontSize: "10px", fontWeight: "bold" }}
             labelFormatter={t => new Date(t).toLocaleTimeString()}
             formatter={(value, name, props) => [
-              <span style={{ color: props.color, fontSize: "13px" }}>{value.toFixed(1)}%</span>,
-              <span className="text-zinc-400 ml-1">{name}</span>
+              <span key="val" style={{ color: props.color }}>{value.toFixed(1)}%</span>,
+              <span key="name" style={{ color: '#ffffff', marginLeft: '4px' }}>{name}</span>
             ]}
           />
 
@@ -109,11 +113,10 @@ export function CpuChart({ data }) {
               key={name}
               type="monotone"
               dataKey={name}
-              name={name}
               stroke={COLORS[index % COLORS.length]}
-              strokeWidth={2.5}
+              strokeWidth={2}
               dot={false}
-              activeDot={{ r: 6, strokeWidth: 0, fill: COLORS[index % COLORS.length] }}
+              activeDot={{ r: 4, strokeWidth: 0 }}
               isAnimationActive={false}
               connectNulls={true}
             />

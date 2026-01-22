@@ -63,7 +63,7 @@ router.get("/",async(req,res)=>{
         ]),
         errorEventModel.aggregate([
             {$match:{
-                projectKey:"test-project",
+                "meta.projectKey":"test-project",
                 "error.timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{
@@ -79,7 +79,7 @@ router.get("/",async(req,res)=>{
         requestEventModel.aggregate([
                 {
                     $match: {
-                    projectKey: "test-project",
+                    "meta.projectKey": "test-project",
                     "request.timestamp": { $gte: from, $lte: to }
                     }
                 },

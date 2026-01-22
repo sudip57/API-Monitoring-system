@@ -3,12 +3,11 @@ import { Outlet } from "react-router-dom";
 import './App.css'
 import { useTimeRange } from "./services/useTimeRange";
 import { AppProvider } from "./context/GlobalAppContext";
-import Navbar from "./components/layout/Navbar";
-import Footer from "./components/layout/Footer"
+import Layout from "./components/layout/Layout"
 function App() {
 
   const [rangeMinutes,setRangeMinutes] = useState(1440)
-  const {from,to} = useTimeRange(rangeMinutes)
+  const {from,to,setRange} = useTimeRange(rangeMinutes)
    // ---- Service scope ----
   const [serviceName, setServiceName] = useState(null);
   // ---- Route scope ----
@@ -20,6 +19,7 @@ function App() {
         to,
         rangeMinutes,
         setRangeMinutes,
+        setRange
       },
       serviceValue: {
         serviceName,
@@ -30,15 +30,13 @@ function App() {
         setRoute,
       },
     }),
-    [from, to, rangeMinutes,setRangeMinutes, serviceName,setServiceName, route,setRoute]
+    [from, to, rangeMinutes,setRangeMinutes, serviceName,setServiceName, route,setRoute,setRange]
   );
   return (
     <AppProvider value={contextValue}>
-      <Navbar/>
-      <main className="w-full bg-gradient-to-b from-[#0a0820] via-[#070707] to-[#071e2e] border-amber-700 overflow-auto">
+      <Layout>
         <Outlet  />
-        <Footer/>
-      </main>
+      </Layout>
     </AppProvider>
 
   )

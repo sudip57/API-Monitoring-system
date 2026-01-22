@@ -69,10 +69,6 @@ router.get("/",async(req,res)=>{
                 "error.timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{
-                    _id:{serviceName:"$meta.serviceName"}
-                }
-            },{
-                $group:{
                     _id:"$_id.serviceName",
                     errorCount:{$sum:1}
                 }
@@ -109,8 +105,6 @@ router.get("/",async(req,res)=>{
     ])
     const errorMap = Object.create(null);
     const rpsMap = Object.create(null);
-    console.log(throughputPerService);
-    console.log("req-per-service ",reqPerService);
     for (const e of errorPerService) {
     errorMap[e._id] = e.errorCount;
     }
@@ -124,7 +118,7 @@ router.get("/",async(req,res)=>{
         const errorRate = svc.totalRequests === 0
                 ? 0
                 : +((errors / svc.totalRequests)*100).toFixed(2)
-        const status  = getServiceHealth({errorRate,totalRequests})
+        const status  = getServiceHealth({ errorRate, totalRequests: svc.totalRequests })
         const healthScore =
             (errorRate * 5) +           
             (svc.p95Latency * 0.01) +  

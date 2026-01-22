@@ -10,10 +10,12 @@ router.get("/",async (req,res)=>{
   console.log('to ',to)
   const [totalRequests, totalErrors, latencyResult,avgThroughputRPS]= await Promise.all([
       requestEventModel.countDocuments({
+        "meta.projectKey": "test-project",
         "request.timestamp": { $gte: from, $lte: to }
       }),
 
       errorEventModel.countDocuments({
+        "meta.projectKey": "test-project",
         "error.timestamp": { $gte: from, $lte: to }
       }),
 

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+
 export function useTimeRange(minutes = 15) {
   const [range, setRange] = useState({ from: 0, to: 0 });
+
   useEffect(() => {
     const now = Date.now();
     setRange({
@@ -9,5 +11,5 @@ export function useTimeRange(minutes = 15) {
     });
   }, [minutes]);
 
-  return range;
+  return { ...range, setRange };
 }

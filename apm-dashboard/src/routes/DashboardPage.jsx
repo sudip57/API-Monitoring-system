@@ -13,19 +13,17 @@ import CombinedHealthRadar from '../features/monitoring/components/CombinedHealt
 const DashboardPage = () => {
 const {timeRange} = useAppContext();
   return (
-    <div className='flex flex-col gap-[30px] p-4 mt-4'>
+    <div className='flex flex-col gap-[30px] p-4 '>
     <OverviewKpis/>
     <div className="flex flex-col md:flex-row gap-2 md:gap-3">
       <RequestChartCard/>
       <ServiceTable/>
     </div>
     <div className='grid md:grid-cols-2 gap-4'>
-      <div className='grid md:grid-cols-2 gap-4'>
         <ErrorChartCard/>
         <LatencyChartCard/>
-      </div>
-      <ResourceMonitor/>
     </div>
+    <ResourceMonitor/>
     </div>
   )
 }

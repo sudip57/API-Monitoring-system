@@ -12,6 +12,7 @@ export default function OverviewKpis() {
       value={data?.totalRequests}
       loading={loading}
       error={error}
+      rangeMinutes={timeRange.rangeMinutes}
     />
 
     <KpiCard
@@ -20,6 +21,7 @@ export default function OverviewKpis() {
       unit="%"
       loading={loading}
       error={error}
+      rangeMinutes={timeRange.rangeMinutes}
     />
 
     <KpiCard
@@ -28,6 +30,7 @@ export default function OverviewKpis() {
       unit="ms"
       loading={loading}
       error={error}
+      rangeMinutes={timeRange.rangeMinutes}
     />
 
     <KpiCard
@@ -36,6 +39,7 @@ export default function OverviewKpis() {
       unit="ms"
       loading={loading}
       error={error}
+      rangeMinutes={timeRange.rangeMinutes}
     />
 
     <KpiCard
@@ -44,6 +48,7 @@ export default function OverviewKpis() {
       unit="rps"
       loading={loading}
       error={error}
+      rangeMinutes={timeRange.rangeMinutes}
     />
   </div>
 

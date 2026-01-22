@@ -41,31 +41,26 @@ const ServiceTable = () => {
             {loading && <RefreshCw size={12} className="animate-spin text-violet-500/50" />}
           </h2>
           <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-wider font-medium">
-            Live Health Metrics • {data.services.length} Total
+            Running Services • {data.services.length} Total
           </p>
         </div>
-        <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-tighter">Live</span>
-            </div>
-            <button className="text-[11px] text-violet-400 hover:text-violet-300 font-semibold transition-colors">
+
+        <button className="text-[11px] text-violet-400 hover:text-violet-300 font-semibold transition-colors cursor-pointer">
                 View All
-            </button>
-        </div>
+        </button>
+
       </div>
 
       {/* Table Container */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left border-collapse">
           <thead>
-            <tr className="text-[11px] uppercase tracking-widest text-zinc-500 bg-white/[0.02]">
+            <tr className="text-[11px] uppercase tracking-widest text-amber-100 bg-white/[0.02]">
               <th className="px-6 py-4 font-bold">Service Name</th>
               <th className="px-6 py-4 text-right font-bold">Avg Latency</th>
               <th className="px-6 py-4 text-right font-bold">p95 Latency</th>
               <th className="px-6 py-4 text-right font-bold">Error Rate</th>
               <th className="px-6 py-4 text-center font-bold">Status</th>
-              <th className="px-6 py-4 w-10"></th>
             </tr>
           </thead>
 
@@ -86,13 +81,13 @@ const ServiceTable = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <span className="text-zinc-300 font-mono text-xs">{svc.avgLatency}ms</span>
+                  <span className="text-zinc-100 font-mono text-xs">{svc.avgLatency}ms</span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <span className="text-zinc-300 font-mono text-xs">{svc.p95Latency}ms</span>
+                  <span className="text-zinc-100 font-mono text-xs">{svc.p95Latency}ms</span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <span className={`text-xs font-mono font-medium ${parseFloat(svc.errorRate) > 1 ? 'text-rose-400' : 'text-zinc-400'}`}>
+                  <span className={`text-xs font-mono font-medium ${parseFloat(svc.errorRate) > 1 ? 'text-rose-400' : 'text-zinc-200'}`}>
                     {svc.errorRate}%
                   </span>
                 </td>
@@ -106,9 +101,6 @@ const ServiceTable = () => {
                       {svc.status.label}
                     </span>
                   </div>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <ChevronRight size={14} className="text-zinc-700 group-hover:text-violet-400 transition-colors transform group-hover:translate-x-1" />
                 </td>
               </tr>
             ))}

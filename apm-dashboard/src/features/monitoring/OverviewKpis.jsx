@@ -4,6 +4,7 @@ import { useAppContext } from "../../context/GlobalAppContext";
 export default function OverviewKpis() {
   const { timeRange } = useAppContext()
   const { data, loading, error } = useOverviewMetrics(timeRange.from, timeRange.to);
+  console.log(data);
   return (
   <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
     <KpiCard

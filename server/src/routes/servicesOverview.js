@@ -40,14 +40,16 @@ function getServiceHealth({ errorRate, totalRequests }) {
 router.get("/",async(req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
+    console.log(from)
+    console.log(to)
     const [reqPerService,errorPerService,throughputPerService] = await Promise.all([
         requestEventModel.aggregate([
             {$match:{
-                "meta.projectkey":"test-project",
+                "meta.projectKey":"test-project",
                 "request.timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{
-                    _id:"$serviceName",
+                    _id:"$meta.serviceName",
                     totalRequests:{$sum:1},
                     avgLatency:{$avg:"$request.duration"},
                     p95Latency:{
@@ -67,7 +69,7 @@ router.get("/",async(req,res)=>{
                 "error.timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{
-                    _id:{serviceName:"$serviceName"}
+                    _id:{serviceName:"$meta.serviceName"}
                 }
             },{
                 $group:{
@@ -86,7 +88,7 @@ router.get("/",async(req,res)=>{
                 {
                     $group: {
                     _id: {
-                        serviceName: "$serviceName",
+                        serviceName: "$meta.serviceName",
                         second: {
                         $dateTrunc: {
                             date: "$request.timestamp",
@@ -108,7 +110,7 @@ router.get("/",async(req,res)=>{
     const errorMap = Object.create(null);
     const rpsMap = Object.create(null);
     console.log(throughputPerService);
-    console.log("error-per-service ",errorPerService);
+    console.log("req-per-service ",reqPerService);
     for (const e of errorPerService) {
     errorMap[e._id] = e.errorCount;
     }

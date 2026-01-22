@@ -69,7 +69,7 @@ router.get("/",async(req,res)=>{
                 "error.timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{
-                    _id:"$_id.serviceName",
+                    _id:"$meta.serviceName",
                     errorCount:{$sum:1}
                 }
             }

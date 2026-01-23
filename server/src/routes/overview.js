@@ -44,28 +44,28 @@ router.get("/",async (req,res)=>{
   const [totalRequests, totalErrors, latencyResult,avgThroughputRPS]= await Promise.all([
       requestEventModel.countDocuments({
         "meta.projectKey": "test-project",
-        "request.timestamp": { $gte: from, $lte: to }
+        "timestamp": { $gte: from, $lte: to }
       }),
 
       errorEventModel.countDocuments({
         "meta.projectKey": "test-project",
-        "error.timestamp": { $gte: from, $lte: to }
+        "timestamp": { $gte: from, $lte: to }
       }),
 
       requestEventModel.aggregate([
         {
           $match:{
-            "request.timestamp":{$gte:from , $lte:to},
-            "request.duration": { $type: "number" }
+            "timestamp":{$gte:from , $lte:to},
+            "duration": { $type: "number" }
         }
         },
         {
           $group:{
             _id:null,
-            avgLatency:{$avg:"$request.duration"},
+            avgLatency:{$avg:"$duration"},
             p95Latency:{
               $percentile:{
-                input:"$request.duration",
+                input:"$duration",
                 p:[0.95],
                 method: "approximate"
               }
@@ -76,14 +76,14 @@ router.get("/",async (req,res)=>{
       requestEventModel.aggregate([
           {
               $match: {
-                "request.timestamp": { $gte: from, $lte: to }
+                "timestamp": { $gte: from, $lte: to }
               }
             },
             {
               $group: {
                 _id: {
                   $dateTrunc: {
-                    date: "$request.timestamp",
+                    date: "$timestamp",
                     unit: "second"
                   }
                 },
@@ -103,7 +103,7 @@ router.get("/",async (req,res)=>{
           $match: {
             projectKey: "test-project",
             serviceName: { $ne: null },
-            "request.timestamp": { $gte: from, $lte: to }
+            "timestamp": { $gte: from, $lte: to }
           }
         },
         {

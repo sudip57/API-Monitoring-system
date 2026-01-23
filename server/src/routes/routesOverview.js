@@ -13,21 +13,21 @@ router.get("/",async(req,res)=>{
                 $match: {
                 "meta.projectKey":"test-project",
                 "meta.serviceName":serviceName,
-                "request.url": { $ne: null },
-                "request.timestamp": { $gte: from, $lte: to }
+                "url": { $ne: null },
+                "timestamp": { $gte: from, $lte: to }
                 }
             },
             {
                 $group: {
                 _id: {
-                    route: "$request.url",
-                    method: "$request.method"
+                    route: "$url",
+                    method: "$method"
                 },
                 totalRequests: { $sum: 1 },
-                avgLatency: { $avg: "$request.duration" },
+                avgLatency: { $avg: "$duration" },
                 p95Latency: {
                     $percentile: {
-                    input: "$request.duration",
+                    input: "$duration",
                     p: [0.95],
                     method: "approximate"
                     }
@@ -40,15 +40,15 @@ router.get("/",async(req,res)=>{
                 $match: {
                 projectKey:"test-project",
                 serviceName,
-                "error.url": { $ne: null },
-                "error.timestamp": { $gte: from, $lte: to }
+                "url": { $ne: null },
+                "timestamp": { $gte: from, $lte: to }
                 }
             },{
                 $group:{
                     _id: {
                         serviceName: "$serviceName",
-                        route: "$error.url",
-                        method: "$error.method",
+                        route: "$url",
+                        method: "$method",
                     }
                 }
             }

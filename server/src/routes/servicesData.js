@@ -39,15 +39,15 @@ router.get("/",async(req,res)=>{
         requestEventModel.aggregate([
             {$match:{
                 "meta.projectKey":"test-project",
-                "request.timestamp":{$gte:from,$lte:to}
+                "timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{
                     _id:"$meta.serviceName",
                     totalRequests:{$sum:1},
-                    avgLatency:{$avg:"$request.duration"},
+                    avgLatency:{$avg:"$duration"},
                     p95Latency:{
                     $percentile:{
-                        input:"$request.duration",
+                        input:"$duration",
                         p:[0.95],
                         method: "approximate"
                     }
@@ -59,7 +59,7 @@ router.get("/",async(req,res)=>{
         errorEventModel.aggregate([
             {$match:{
                 "meta.projectKey":"test-project",
-                "error.timestamp":{$gte:from,$lte:to}
+                "timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{
                     _id:"$meta.serviceName",
@@ -71,7 +71,7 @@ router.get("/",async(req,res)=>{
                 {
                     $match: {
                     "meta.projectKey": "test-project",
-                    "request.timestamp": { $gte: from, $lte: to }
+                    "timestamp": { $gte: from, $lte: to }
                     }
                 },
                 {
@@ -80,7 +80,7 @@ router.get("/",async(req,res)=>{
                         serviceName: "$meta.serviceName",
                         second: {
                         $dateTrunc: {
-                            date: "$request.timestamp",
+                            date: "$timestamp",
                             unit: "second"
                         }
                         }

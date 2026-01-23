@@ -2,39 +2,33 @@ const express = require("express");
 const router = express.Router();
 const requestEventModel = require('../models/requestEventModel')
 const errorEventModel = require('../models/errorEventModel');
-const { totalRequests } = require("../controllers/statsController");
 function getServiceHealth({ errorRate, totalRequests }) {
   if (totalRequests < 50) {
     return {
       label: "No Data",
-      className: "bg-zinc-800 text-zinc-400"
     }
   }
 
   if (errorRate < 0.1) {
     return {
       label: "Healthy",
-      className: "bg-emerald-900/40 text-emerald-400"
     }
   }
 
   if (errorRate < 0.5) {
     return {
       label: "Degraded",
-      className: "bg-yellow-900/40 text-yellow-400"
     }
   }
 
   if (errorRate < 1) {
     return {
       label: "Unhealthy",
-      className: "bg-orange-900/40 text-orange-400"
     }
   }
 
   return {
     label: "Critical",
-    className: "bg-red-900/40 text-red-400"
   }
 }
 router.get("/",async(req,res)=>{
@@ -45,7 +39,6 @@ router.get("/",async(req,res)=>{
         requestEventModel.aggregate([
             {$match:{
                 "meta.projectKey":"test-project",
-                "meta.serviceName":req.query.serviceName,
                 "request.timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{

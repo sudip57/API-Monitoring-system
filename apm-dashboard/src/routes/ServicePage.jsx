@@ -18,10 +18,9 @@ const ServicePage = () => {
     console.log(latest);
     const navigate = useNavigate();
     const handleClick  = (serviceName)=>{
-
         navigate(`/services/${serviceName}`);
     }
-    console.log(data)
+    console.log("servicepage data ---------------",data)
     if (loading && !data) {
     return (
       <div className="w-full h-80 rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse flex flex-col items-center justify-center gap-4">

@@ -6,7 +6,7 @@ import { useAppContext } from "../../../context/GlobalAppContext";
 const ServiceTable = () => {
   const { timeRange } = useAppContext();
   const { data, loading, error } = useServiceOverview(timeRange.from, timeRange.to);
-
+  console.log("servicetabledata---------------",data)
   if (loading && !data) {
     return (
       <div className="w-full h-80 rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse flex flex-col items-center justify-center gap-4">

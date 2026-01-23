@@ -4,8 +4,6 @@ const router = express.Router();
 const requestEventModel = require("../models/requestEventModel");
 const errorEventModel = require("../models/errorEventModel");
 
-
-
 function getBucketSizeMs(from, to) {
   const diffMs = to - from;
   const desiredBuckets = 30;

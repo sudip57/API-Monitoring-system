@@ -9,7 +9,7 @@ const ErrorEventSchema = new Schema(
       serviceName: { type: String, required: true, index: true },
       },
       timestamp: { type: Date, required: true, index: true },                       
-      error: { type: mongoose.Schema.Types.Mixed }
+      event: { type: mongoose.Schema.Types.Mixed }
     },{ strict: false }
 );
 const errorEventModel = mainDB.model("errorEvents",ErrorEventSchema,"errorEvents");

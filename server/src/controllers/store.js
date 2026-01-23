@@ -27,10 +27,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.timestamp),
-        request: {
-          ...event,
-          timestamp: normalizeDate(event.timestamp),
-        },
+        event
       });
     }
 
@@ -42,10 +39,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.timestamp),
-        error: {
-          ...event,
-          timestamp: normalizeDate(event.timestamp),
-        },
+        event
       });
     }
 
@@ -57,7 +51,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.timestamp),
-        log: event.log,
+        event
       });
     }
 
@@ -70,7 +64,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.span?.startTime),
-        span: event.span,
+        event
       });
     }
 
@@ -83,7 +77,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.span?.startTime),
-        span: event.span,
+        event
       });
     }
     // RESOURCE METRICS
@@ -94,7 +88,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.timestamp),
-        metrics: event,
+        event
       });
     }
   }

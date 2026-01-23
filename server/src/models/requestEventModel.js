@@ -8,7 +8,7 @@ const RequestEventSchema = new Schema(
         serviceName: { type: String, required: true, index: true },
       },
       timestamp: { type: Date, required: true, index: true },                       
-      request: { type: mongoose.Schema.Types.Mixed }
+      event: { type: mongoose.Schema.Types.Mixed }
     },{ strict: false }
 );
 const requestEventModel = mainDB.model("requestEvents", RequestEventSchema,"requestEvents");

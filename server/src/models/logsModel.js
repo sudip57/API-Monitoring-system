@@ -8,7 +8,7 @@ const logEventSchema = new Schema(
       serviceName: { type: String, required: true, index: true },
     },
     timestamp: { type: Date, required: true, index: true },                       
-    log: { type: mongoose.Schema.Types.Mixed }
+    event: { type: mongoose.Schema.Types.Mixed }
   },{ strict: false }
 );
 

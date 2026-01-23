@@ -9,7 +9,7 @@ const spanEventSchema = new Schema(
     },
     info : { type: String, required:true, index: true},
     timestamp: { type: Date, required: true, index: true },                       
-    span: { type: mongoose.Schema.Types.Mixed }
+    event: { type: mongoose.Schema.Types.Mixed }
   },{ strict: false }
 );
 

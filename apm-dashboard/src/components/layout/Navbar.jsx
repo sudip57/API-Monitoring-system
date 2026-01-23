@@ -30,9 +30,8 @@ const Navbar = ({ open, setOpen }) => {
   const now = Date.now();
   const from = now - minutes * 60 * 1000;
 
-  timeRange.setRangeMinutes(minutes); // update minutes
-  timeRange.setRange({ from, to: now }); // 🔥 force update range
-
+  timeRange.setRangeMinutes(minutes);
+  timeRange.setRange({ from, to: now });
   setIsMenuOpen(false);
 };
 

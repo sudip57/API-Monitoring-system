@@ -16,7 +16,7 @@ const Layout = ({ children }) => {
         
         <Navbar open={open} setOpen={setOpen} />
 
-        <main className="flex-1 overflow-auto px-3 sm:px-4 py-3">
+        <main className="flex-1 overflow-auto ">
           {children}
         </main>
 

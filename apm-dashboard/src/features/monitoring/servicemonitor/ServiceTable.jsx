@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { useServiceOverview } from '../../../services/useServiceOverview'
-import { Server, Activity, AlertCircle, ChevronRight, RefreshCw } from "lucide-react";
+import { Server, Activity, AlertCircle, RefreshCw, ArrowUpRight } from "lucide-react";
 import { useAppContext } from "../../../context/GlobalAppContext";
+
 const ServiceTable = () => {
   const { timeRange } = useAppContext();
   const { data, loading, error } = useServiceOverview(timeRange.from, timeRange.to);
-  console.log("data----------",data);
 
   if (loading && !data) {
     return (
-      <div className="w-full h-64 rounded-xl bg-white/5 border border-white/10 animate-pulse flex items-center justify-center">
-        <div className="text-zinc-500 text-xs tracking-widest uppercase flex items-center gap-2">
-          <RefreshCw size={14} className="animate-spin" />
-          Analyzing Services...
+      <div className="w-full h-80 rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse flex flex-col items-center justify-center gap-4">
+        <RefreshCw size={24} className="animate-spin text-violet-500/40" />
+        <div className="text-zinc-500 text-[10px] tracking-[0.2em] uppercase font-bold">
+          Mapping Service Topology
         </div>
       </div>
     );
@@ -20,84 +20,97 @@ const ServiceTable = () => {
 
   if (error || !data || !data.services || data.services.length === 0) {
     return (
-      <div className="rounded-xl border border-white/10 bg-[#0f0f15] p-10 text-center">
-        <AlertCircle className="mx-auto text-zinc-600 mb-3" size={32} />
-        <div className="text-zinc-400 text-sm">No service data available for this range</div>
+      <div className="rounded-2xl border border-white/10 bg-[#0c0c12] p-12 text-center shadow-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent pointer-events-none" />
+        <AlertCircle className="mx-auto text-red-500/40 mb-4" size={40} />
+        <h3 className="text-white font-semibold mb-1">No Telemetry Detected</h3>
+        <p className="text-zinc-500 text-xs max-w-xs mx-auto">Check your service connection or adjust the time range to see active services.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0f0f15] shadow-2xl overflow-hidden relative w-full">
-      {/* Decorative Glow */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 blur-[50px] pointer-events-none" />
+    <div className="group relative w-full rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl overflow-hidden transition-all hover:border-white/20">
+      
+      {/* Refractive Glass Light Effect */}
+      <div className="absolute -top-24 -right-24 w-64 h-64 bg-violet-600/10 blur-[100px] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-transparent pointer-events-none" />
 
       {/* Header */}
-      <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
-        <div>
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Server size={16} className="text-violet-400" />
-            Service Registry
-            {loading && <RefreshCw size={12} className="animate-spin text-violet-500/50" />}
-          </h2>
-          <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-wider font-medium">
-            Running Services • {data.services.length} Total
-          </p>
+      <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between bg-white/[0.01] relative z-10">
+        <div className="flex items-center gap-4">
+          <div className="p-2.5 bg-violet-500/10 rounded-xl border border-violet-500/20 shadow-inner">
+            <Server size={20} className="text-violet-400" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+              Service Registry
+              {loading && <RefreshCw size={12} className="animate-spin text-violet-400/50" />}
+            </h2>
+            <p className="text-[10px] text-zinc-500 mt-0.5 uppercase tracking-widest font-bold">
+              {data.services.length} Nodes Active
+            </p>
+          </div>
         </div>
 
-        <button className="text-[11px] text-violet-400 hover:text-violet-300 font-semibold transition-colors cursor-pointer">
-                View All
+        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-[10px] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all font-bold uppercase tracking-tighter">
+          Full Metrics <ArrowUpRight size={12} />
         </button>
-
       </div>
 
-      {/* Table Container */}
-      <div className="overflow-x-auto">
+      {/* Table Section */}
+      <div className="overflow-x-auto relative z-10">
         <table className="w-full text-sm text-left border-collapse">
           <thead>
-            <tr className="text-[11px] uppercase tracking-widest text-amber-100 bg-white/[0.02]">
-              <th className="px-6 py-4 font-bold">Service Name</th>
-              <th className="px-6 py-4 text-right font-bold">Avg Latency</th>
-              <th className="px-6 py-4 text-right font-bold">p95 Latency</th>
-              <th className="px-6 py-4 text-right font-bold">Error Rate</th>
-              <th className="px-6 py-4 text-center font-bold">Status</th>
+            <tr className="text-[10px] uppercase tracking-[0.15em] text-zinc-300 bg-white/[0.02]">
+              <th className="px-6 py-4 font-bold border-b border-white/5">Service Identity</th>
+              <th className="px-6 py-4 text-right font-bold border-b border-white/5">Avg Latency</th>
+              <th className="px-6 py-4 text-right font-bold border-b border-white/5">P95 Burst</th>
+              <th className="px-6 py-4 text-right font-bold border-b border-white/5">Error Rate</th>
+              <th className="px-6 py-4 text-center font-bold border-b border-white/5">Status</th>
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-white/[0.03]">
             {data.services.map((svc) => (
               <tr
                 key={svc.serviceName}
-                className="group hover:bg-white/[0.03] transition-all duration-200"
+                className="group/row hover:bg-white/[0.03] transition-colors duration-150"
               >
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center group-hover:border-violet-500/40 transition-colors">
-                      <Activity size={14} className="text-zinc-500 group-hover:text-violet-400" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center group-hover/row:border-violet-500/30 group-hover/row:bg-violet-500/[0.02] transition-all">
+                      <Activity size={16} className="text-zinc-600 group-hover/row:text-violet-400 transition-colors" />
                     </div>
-                    <span className="text-zinc-100 font-semibold tracking-tight">
-                      {svc.serviceName}
-                    </span>
+                    <div>
+                      <div className="text-zinc-100 font-bold tracking-tight text-sm">
+                        {svc.serviceName}
+                      </div>
+                    </div>
                   </div>
                 </td>
+                
                 <td className="px-6 py-4 text-right">
-                  <span className="text-zinc-100 font-mono text-xs">{svc.avgLatency}ms</span>
+                  <div className="text-zinc-100 font-mono text-xs font-semibold">{svc.avgLatency}ms</div>
                 </td>
+
                 <td className="px-6 py-4 text-right">
-                  <span className="text-zinc-100 font-mono text-xs">{svc.p95Latency}ms</span>
+                  <div className="text-zinc-100 font-mono text-xs font-semibold">{svc.p95Latency}ms</div>
                 </td>
+
                 <td className="px-6 py-4 text-right">
-                  <span className={`text-xs font-mono font-medium ${parseFloat(svc.errorRate) > 1 ? 'text-rose-400' : 'text-zinc-200'}`}>
+                  <div className={`text-xs font-mono font-bold ${parseFloat(svc.errorRate) > 1 ? 'text-rose-400' : 'text-zinc-300'}`}>
                     {svc.errorRate}%
-                  </span>
+                  </div>
                 </td>
+
                 <td className="px-6 py-4 text-center">
                   <div className="flex justify-center">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight border backdrop-blur-md
+                    <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all duration-300
                         ${svc.status.label.toLowerCase() === 'healthy' 
-                          ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-                          : 'bg-rose-500/10 border-rose-500/20 text-rose-400'}`}>
-                      <span className={`w-1 h-1 rounded-full animate-pulse ${svc.status.label.toLowerCase() === 'healthy' ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                          ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]' 
+                          : 'bg-rose-500/5 border-rose-500/20 text-rose-400 shadow-[0_0_15px_-5px_rgba(244,63,94,0.3)]'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${svc.status.label.toLowerCase() === 'healthy' ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
                       {svc.status.label}
                     </span>
                   </div>
@@ -106,15 +119,6 @@ const ServiceTable = () => {
             ))}
           </tbody>
         </table>
-      </div>
-      
-      <div className="px-6 py-3 bg-white/[0.01] border-t border-white/5 flex justify-between items-center">
-         <span className="text-[10px] text-zinc-600 font-medium">
-            Next sync in sync with health monitor
-         </span>
-         <span className="text-[10px] text-zinc-600 uppercase font-bold tracking-tighter">
-            Last update: {new Date().toLocaleTimeString()}
-         </span>
       </div>
     </div>
   );

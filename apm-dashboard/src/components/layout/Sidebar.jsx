@@ -5,12 +5,14 @@ const Sidebar = ({ open, setOpen }) => {
   const navMap = {
     Dashboard: "/",
     Services: "/services",
+    Routes: "/routes",
     Errors: "/errors",
     Logs: "/logs",
     Alerts: "/alerts",
+    
   };
 
-  const navItems = ["Dashboard", "Services", "Errors", "Logs", "Alerts"];
+  const navItems = ["Dashboard", "Services","Routes", "Errors", "Logs", "Alerts"];
   const navigate = useNavigate();
   const location = useLocation(); // auto active route
 

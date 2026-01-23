@@ -40,12 +40,12 @@ function getServiceHealth({ errorRate, totalRequests }) {
 router.get("/",async(req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
-    console.log(from)
-    console.log(to)
+
     const [reqPerService,errorPerService,throughputPerService] = await Promise.all([
         requestEventModel.aggregate([
             {$match:{
                 "meta.projectKey":"test-project",
+                "meta.serviceName":req.query.serviceName,
                 "request.timestamp":{$gte:from,$lte:to}
             }},{
                 $group:{

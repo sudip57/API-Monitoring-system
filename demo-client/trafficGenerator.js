@@ -3,7 +3,7 @@ const axios = require("axios");
 
 function randomUserId() {
   // 10% chance to hit error route
-  if (Math.random() < 0.1) return "500";
+  if (Math.random() < 0.03) return "500";
   return Math.floor(Math.random() * 1000).toString();
 }
 

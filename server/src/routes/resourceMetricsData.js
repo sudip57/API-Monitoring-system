@@ -40,7 +40,7 @@ router.get("/",async(req,res)=>{
                 null,
                 { sort: { timestamp: -1 } }
                 ).lean();
-            const from = new Date(Date.now() - 5 * 60 * 1000);
+            const from = new Date(Date.now() - 60 * 1000);
             const docs = await resourceMetricsModel.find({
                 "meta.projectKey": req.query.projectkey,
                 "meta.serviceName": req.query.servicename,

@@ -13,7 +13,7 @@ app.use(express.json());
 app.use("/api",timeRangeMiddleware);
 app.use("/api/overview", require("./src/routes/overview"));
 app.use("/api/timeSeries", require("./src/routes/timeSeries"));
-app.use("/api/services", require("./src/routes/servicesOverview"));
+app.use("/api/services", require("./src/routes/servicesData"));
 app.use("/api/routes", require("./src/routes/routesOverview"));
 app.use("/resourcedata", require("./src/routes/resourceMetricsData"));
 app.use("/ingest", ingestRoute);

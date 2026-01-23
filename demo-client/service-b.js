@@ -4,7 +4,6 @@ const express = require("express");
 APM.initializeAPM({
   projectKey: "test-project",
   serviceName: "service-b",
-  instanceId: "node-root-1",
   env: "development",
 });
 

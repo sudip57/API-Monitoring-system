@@ -15,7 +15,12 @@ function extractFields(event) {
   "duration",
   "message",
   "stack",
-  "level"
+  "level",
+  "cpu",
+  "memory",
+  "systemMemory",
+  "uptimeSec",
+  "network"
 ];
   const result = {};
 

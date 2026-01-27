@@ -3,6 +3,31 @@ const errorEventModel = require("../models/errorEventModel");
 const rootSpanEventModel = require("../models/rootSpanEventModel");
 const childSpanEventModel = require("../models/childSpanModel");
 const logEventModel = require("../models/logsModel")
+
+function extractFields(event) {
+  const COMMON_FIELDS = [
+  "traceId",
+  "spanId",
+  "parentSpanId",
+  "url",
+  "method",
+  "statusCode",
+  "duration",
+  "message",
+  "stack",
+  "level"
+];
+  const result = {};
+
+  for (const key of COMMON_FIELDS) {
+    if (event[key] !== undefined) {
+      result[key] = event[key];
+    }
+  }
+
+  return result;
+}
+
 function normalizeDate(value) {
   if (!value) return new Date();
   if (value instanceof Date) return value;
@@ -27,7 +52,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.timestamp),
-        event
+        ...extractFields(event)
       });
     }
 
@@ -39,7 +64,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.timestamp),
-        event
+        ...extractFields(event)
       });
     }
 
@@ -51,7 +76,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.timestamp),
-        event
+       ...extractFields(event)
       });
     }
 
@@ -63,8 +88,8 @@ async function saveEvents(events) {
           projectKey: events.projectKey,
           serviceName: events.serviceName,
         },
-        timestamp: normalizeDate(event.span?.startTime),
-        event
+        timestamp: normalizeDate(event.timestamp),
+        ...extractFields(event)
       });
     }
 
@@ -76,8 +101,8 @@ async function saveEvents(events) {
           projectKey: events.projectKey,
           serviceName: events.serviceName,
         },
-        timestamp: normalizeDate(event.span?.startTime),
-        event
+        timestamp: normalizeDate(event.timestamp),
+        ...extractFields(event)
       });
     }
     // RESOURCE METRICS
@@ -88,7 +113,7 @@ async function saveEvents(events) {
           serviceName: events.serviceName,
         },
         timestamp: normalizeDate(event.timestamp),
-        event
+        ...extractFields(event)
       });
     }
   }
@@ -102,6 +127,7 @@ if (resourceMetrics.length) {
   const resourceMetricsModel = require("../models/resourceMetricsModel");
   await resourceMetricsModel.insertMany(resourceMetrics);
 }
+
 }
 
 module.exports = {saveEvents};

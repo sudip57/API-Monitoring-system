@@ -34,7 +34,7 @@ function getServiceHealth({ errorRate, totalRequests }) {
 router.get("/",async(req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
-
+    
     const [reqPerService,errorPerService,throughputPerService] = await Promise.all([
         requestEventModel.aggregate([
             {$match:{
@@ -120,11 +120,11 @@ router.get("/",async(req,res)=>{
         return {
             serviceName: svc._id,
             totalRequests: svc.totalRequests,
-            avgThroughputRPS:rps.toFixed(2),
+            avgThroughputRPS:rps,
             errorCount: errors,
             errorRate:errorRate,
             status:status,
-            avgLatency: svc.avgLatency.toFixed(2),
+            avgLatency: svc.avgLatency,
             p95Latency: svc.p95Latency,
             _healthScore: healthScore,
         }

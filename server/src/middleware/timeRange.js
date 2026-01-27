@@ -1,12 +1,14 @@
 function timeRangeMiddleware(req,res,next){
-    const {from , to} = req.query;
-    if (!from || !to) {
+    const {timeRange} = req.query;
+    if (!timeRange) {
     return res.status(400).json({
-      error: "`from` and `to` query params are required (epoch ms)"
+      error: "timeRange is required"
     });
   }
-  const fromMs = Number(from);
-  const toMs = Number(to);
+  const now = Date.now();
+  const TR = Number(timeRange);
+  const fromMs = now - TR*60*1000;
+  const toMs  =  now;
     if (Number.isNaN(fromMs) || Number.isNaN(toMs)) {
     return res.status(400).json({
       error: "`from` and `to` must be valid numbers"

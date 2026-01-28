@@ -1,7 +1,6 @@
 const requestEventModel = require("../models/requestEventModel");
 const errorEventModel = require("../models/errorEventModel");
-const rootSpanEventModel = require("../models/rootSpanEventModel");
-const childSpanEventModel = require("../models/childSpanModel");
+const spanEventModel = require("../models/spanEvents")
 const logEventModel = require("../models/logsModel")
 
 function extractFields(event) {
@@ -20,7 +19,8 @@ function extractFields(event) {
     "memory",
     "systemMemory",
     "uptimeSec",
-    "network"
+    "network",
+    "parentUrl"
   ];
 
   const result = {};
@@ -45,7 +45,7 @@ function normalizeDate(value) {
 async function saveEvents(events) {
   const requests = [];
   const errors = [];
-  const childSpans = [];
+  const spans = [];
   const rootSpans = [];
   const logs = [];
   const resourceMetrics = [];
@@ -88,21 +88,8 @@ async function saveEvents(events) {
     }
 
     // CHILD SPAN
-    if (event.info === "childSpan") {
-      childSpans.push({
-        info: event.info,
-        meta:{
-          projectKey: events.projectKey,
-          serviceName: events.serviceName,
-        },
-        timestamp: normalizeDate(event.timestamp),
-        ...extractFields(event)
-      });
-    }
-
-    // ROOT SPAN
-    if (event.info === "rootSpan") {
-      rootSpans.push({
+    if (event.info === "childSpan"||event.info === "rootSpan") {
+      spans.push({
         info: event.info,
         meta:{
           projectKey: events.projectKey,
@@ -128,8 +115,7 @@ async function saveEvents(events) {
 if (requests.length) await requestEventModel.insertMany(requests);
 if (errors.length) await errorEventModel.insertMany(errors);
 if (logs.length) await logEventModel.insertMany(logs);
-if (childSpans.length) await childSpanEventModel.insertMany(childSpans);
-if (rootSpans.length) await rootSpanEventModel.insertMany(rootSpans);
+if (spans.length) await spanEventModel.insertMany(spans);
 if (resourceMetrics.length) {
   const resourceMetricsModel = require("../models/resourceMetricsModel");
   await resourceMetricsModel.insertMany(resourceMetrics);

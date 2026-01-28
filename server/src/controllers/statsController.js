@@ -1,39 +1,78 @@
-const {
-  getTotalRequests,
-  getAverageLatency,
-  getTotalErrors,
-} = require("../services/statsService"); 
+const express = require("express");
+const router = express.Router();
+const requestEventModel = require('../models/requestEventModel')
+const errorEventModel = require('../models/errorEventModel')
+async function getStats(from,to){
+  const [totalRequests, totalErrors, latencyResult,avgThroughputRPS]= await Promise.all([
+      requestEventModel.countDocuments({
+        "meta.projectKey": "test-project",
+        "timestamp": { $gte: from, $lte: to }
+      }),
 
-const totalRequests = async (req, res) => {
-  try {
-    const { projectKey, serviceName } = req.query;
-    const total = await getTotalRequests({ projectKey, serviceName });
-    res.json({ total });
-  } catch (err) {
-    console.error("totalRequests error:", err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+      errorEventModel.countDocuments({
+        "meta.projectKey": "test-project",
+        "timestamp": { $gte: from, $lte: to }
+      }),
 
-const avgLatency = async (req, res) => {
-  try {
-    const { projectKey, serviceName } = req.query;
-    const avgLatency = await getAverageLatency({ projectKey, serviceName });
-    res.json({ avgLatency });
-  } catch (err) {
-    console.error("avgLatency error:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+      requestEventModel.aggregate([
+        {
+          $match:{
+            "timestamp":{$gte:from , $lte:to},
+            "duration": { $type: "number" }
+        }
+        },
+        {
+          $group:{
+            _id:null,
+            avgLatency:{$avg:"$duration"},
+            p95Latency:{
+              $percentile:{
+                input:"$duration",
+                p:[0.95],
+                method: "approximate"
+              }
+            }
+          }
+        },
+      ]),
+      requestEventModel.aggregate([
+          {
+              $match: {
+                "timestamp": { $gte: from, $lte: to }
+              }
+            },
+            {
+              $group: {
+                _id: {
+                  $dateTrunc: {
+                    date: "$timestamp",
+                    unit: "second"
+                  }
+                },
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                avgThroughputRPS: { $avg: "$count" }
+              }
+            }
+        ])
+    ]);
+  const eRate  = ((totalErrors/totalRequests)*100).toFixed(2);
+  const errorRate = eRate === "number"?eRate:0;
+  const avgLatency =latencyResult.length>0 && typeof latencyResult[0].avgLatency === "number" ? latencyResult[0].avgLatency.toFixed(2):0;
+  const p95Latency = latencyResult.length>0 &&typeof latencyResult[0].p95Latency[0]==="number"?latencyResult[0].p95Latency[0]:0;
+  const avgThroughput = avgThroughputRPS.length>0 ? avgThroughputRPS[0].avgThroughputRPS.toFixed(2):0;
+  const data = {
+    totalErrors,
+    totalRequests,
+    errorRate,
+    avgLatency,
+    p95Latency,
+    avgThroughput
   }
-};
-
-const totalErrors = async (req, res) => {
-  try {
-    const { projectKey, serviceName } = req.query;
-    const total = await getTotalErrors({ projectKey, serviceName });
-    res.json({ total });
-  } catch (err) {
-    console.error("totalErrors error:", err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-module.exports = { totalRequests, avgLatency, totalErrors };
+  return data;
+}
+module.exports = getStats;

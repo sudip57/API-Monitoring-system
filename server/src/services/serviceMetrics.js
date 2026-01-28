@@ -1,7 +1,6 @@
-const express = require("express");
-const router = express.Router();
-const requestEventModel = require('../models/requestEventModel')
-const errorEventModel = require('../models/errorEventModel');
+const requestEventModel = require("../models/requestEventModel")
+const errorEventModel = require("../models/errorEventModel")
+const serviceMetricsModel = require("../models/serviceMetricsModel")
 function getServiceHealth({ errorRate, totalRequests }) {
   if (totalRequests < 50) {
     return {
@@ -31,11 +30,24 @@ function getServiceHealth({ errorRate, totalRequests }) {
     label: "Critical",
   }
 }
-router.get("/",async(req,res)=>{
-    const from = new Date(req.timeRange.from);
-    const to = new Date(req.timeRange.to);
-    
-    const [reqPerService,errorPerService,throughputPerService] = await Promise.all([
+
+function getBucket(timestamp) {
+  return Math.floor(timestamp / 60000) * 60000;
+}
+
+function percentile(arr, p) {
+  if (!arr.length) return 0;
+  arr.sort((a, b) => a - b);
+  const index = Math.ceil((p / 100) * arr.length) - 1;
+  return arr[index];
+}
+
+async function computeServiceMetrics() {
+  const now = Date.now();
+  const bucket = getBucket(now);
+  const from = bucket - 60000;
+  const to = bucket;
+  const [reqPerService,errorPerService,throughputPerService] = await Promise.all([
         requestEventModel.aggregate([
             {$match:{
                 "meta.projectKey":"test-project",
@@ -105,7 +117,6 @@ router.get("/",async(req,res)=>{
     rpsMap[r._id] = r.avgThroughputRPS;
     }
     const services = reqPerService.map(svc=>{
-        console.log(svc)
         const errors = errorMap[svc._id]||0;
         const rps = rpsMap[svc._id]||0;
         const errorRate = svc.totalRequests === 0
@@ -115,24 +126,24 @@ router.get("/",async(req,res)=>{
         const healthScore =
             (errorRate * 5) +           
             (svc.p95Latency * 0.01) +  
-            (rps * 0.1);  
-        console.log(status)
-        return {
-            serviceName: svc._id,
-            totalRequests: svc.totalRequests,
-            avgThroughputRPS:rps.toFixed(2),
-            errorCount: errors,
-            errorRate:errorRate,
-            status:status,
-            avgLatency: svc.avgLatency.toFixed(2),
-            p95Latency: svc.p95Latency[0],
-            _healthScore: healthScore,
-        }
-    })
-    services.sort((a, b) => b._healthScore - a._healthScore);
-    services.forEach(s => delete s._healthScore);
-    res.send({
-        services
-    })
-})
-module.exports = router
+            (rps * 0.1); 
+            return {
+              meta:{
+                projectKey:"test-project",
+                serviceName: svc._id,
+              },
+              totalRequests: svc.totalRequests,
+              avgThroughputRPS:rps.toFixed(2),
+              errorCount: errors,
+              errorRate:errorRate,
+              status:status,
+              avgLatency: svc.avgLatency.toFixed(2),
+              p95Latency: svc.p95Latency[0],
+              _healthScore: healthScore,
+          } 
+          })
+await serviceMetricsModel.bulkWrite(services);
+console.log("Service metrics computed for bucket:", bucket);
+}
+setInterval(computeServiceMetrics, 60000);
+module.exports = computeServiceMetrics;

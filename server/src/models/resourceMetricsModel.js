@@ -7,7 +7,7 @@ const resourceMetricsSchema = new mongoose.Schema({
         serviceName: { type: String, required: true },
     },
     event: { type: mongoose.Schema.Types.Mixed }
-});
+},{ strict: false });
 const resourceMetricsModel = mainDB.model(
   "resourceMetrics",
   resourceMetricsSchema,

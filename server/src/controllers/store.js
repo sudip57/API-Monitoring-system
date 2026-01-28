@@ -6,32 +6,34 @@ const logEventModel = require("../models/logsModel")
 
 function extractFields(event) {
   const COMMON_FIELDS = [
-  "traceId",
-  "spanId",
-  "parentSpanId",
-  "url",
-  "method",
-  "statusCode",
-  "duration",
-  "message",
-  "stack",
-  "level",
-  "cpu",
-  "memory",
-  "systemMemory",
-  "uptimeSec",
-  "network"
-];
+    "traceId",
+    "spanId",
+    "parentSpanId",
+    "url",
+    "method",
+    "statusCode",
+    "duration",
+    "message",
+    "stack",
+    "level",
+    "cpu",
+    "memory",
+    "systemMemory",
+    "uptimeSec",
+    "network"
+  ];
+
   const result = {};
 
   for (const key of COMMON_FIELDS) {
-    if (event[key] !== undefined) {
-      result[key] = event[key];
+    if (Object.prototype.hasOwnProperty.call(event, key)) {
+      result[key] = event[key]; 
     }
   }
 
   return result;
 }
+
 
 function normalizeDate(value) {
   if (!value) return new Date();

@@ -113,8 +113,8 @@ router.get("/",async (req,res)=>{
           $count: "count"
         }
       ]);
-  const errorRate  = ((totalErrors/totalRequests)*100).toFixed(2);
-  console.log(errorRate)
+  const eRate  = ((totalErrors/totalRequests)*100).toFixed(2);
+  const errorRate = eRate === "number"?eRate:0;
   const avgLatency =latencyResult.length>0 && typeof latencyResult[0].avgLatency === "number" ? latencyResult[0].avgLatency.toFixed(2):0;
   const p95Latency = latencyResult.length>0 &&typeof latencyResult[0].p95Latency[0]==="number"?latencyResult[0].p95Latency[0]:0;
   const avgThroughput = avgThroughputRPS.length>0 ? avgThroughputRPS[0].avgThroughputRPS.toFixed(2):0;

@@ -20,7 +20,8 @@ function extractFields(event) {
     "systemMemory",
     "uptimeSec",
     "network",
-    "parentUrl"
+    "parentUrl",
+    "parentRootId"
   ];
 
   const result = {};

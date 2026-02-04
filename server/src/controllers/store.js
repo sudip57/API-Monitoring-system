@@ -1,7 +1,7 @@
-const requestEventModel = require("../models/requestEventModel");
-const errorEventModel = require("../models/errorEventModel");
-const spanEventModel = require("../models/spanEvents")
-const logEventModel = require("../models/logsModel")
+const requestEventModel = require("../models/raw/requestEventModel");
+const errorEventModel = require("../models/raw/errorEventModel");
+const spanEventModel = require("../models/raw/spanEvents")
+const logEventModel = require("../models/raw/logsModel")
 
 function extractFields(event) {
   const COMMON_FIELDS = [
@@ -118,7 +118,7 @@ if (errors.length) await errorEventModel.insertMany(errors);
 if (logs.length) await logEventModel.insertMany(logs);
 if (spans.length) await spanEventModel.insertMany(spans);
 if (resourceMetrics.length) {
-  const resourceMetricsModel = require("../models/resourceMetricsModel");
+  const resourceMetricsModel = require("../models/raw/resourceMetricsModel");
   await resourceMetricsModel.insertMany(resourceMetrics);
 }
 

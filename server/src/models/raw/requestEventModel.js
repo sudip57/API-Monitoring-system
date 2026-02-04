@@ -1,7 +1,7 @@
 // models/request.model.js
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const mainDB = require("../db/db");
+const mainDB = require("../../db/db");
 const RequestEventSchema = new Schema(
   {   meta:{
         projectKey: { type: String, required: true, index: true },

@@ -1,6 +1,6 @@
 // models/error.model.js
 const mongoose = require("mongoose");
-const mainDB = require("../db/db");
+const mainDB = require("../../db/db");
 const { Schema } = mongoose;
 
 const ErrorEventSchema = new Schema(

@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const mainDB = require("../db/db");
-const spanEventSchema = new Schema(
+const mainDB = require("../../db/db");
+const logEventSchema = new Schema(
   { 
-    info : { type: String, required:true, index: true},
     meta:{
       projectKey: { type: String, required: true, index: true },
       serviceName: { type: String, required: true, index: true },
@@ -13,9 +12,9 @@ const spanEventSchema = new Schema(
   },{ strict: false }
 );
 
-const childSpanEventModel = mainDB.model(
-  "childSpanEvents",
-  spanEventSchema,
-  "childSpanEvents"
+const logEventModel = mainDB.model(
+  "logs",
+  logEventSchema,
+  "logs"
 );
-module.exports = childSpanEventModel;
+module.exports = logEventModel;

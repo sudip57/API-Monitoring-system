@@ -1,7 +1,6 @@
 const APM = require("api-monitor-sdk");
 const express = require("express");
 const axios = require("axios");
-
 APM.initializeAPM({
   projectKey: "test-project",
   serviceName: "service-a",

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { saveRequests,saveEvents} = require("../controllers/store");
+const { saveEvents} = require("../controllers/store");
 router.post("/", (req, res) => {
     console.log("Received ingest request:", req.body);
     saveEvents(req.body);  

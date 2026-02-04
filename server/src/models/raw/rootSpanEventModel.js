@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const mainDB = require("../db/db");
+const mainDB = require("../../db/db");
 const spanEventSchema = new Schema(
   { 
     meta:{

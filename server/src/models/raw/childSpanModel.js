@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const mainDB = require("../db/db");
+const mainDB = require("../../db/db");
 const spanEventSchema = new Schema(
   { 
     info : { type: String, required:true, index: true},
@@ -13,9 +13,9 @@ const spanEventSchema = new Schema(
   },{ strict: false }
 );
 
-const spanEventModel = mainDB.model(
-  "spanEvents",
+const childSpanEventModel = mainDB.model(
+  "childSpanEvents",
   spanEventSchema,
-  "spanEvents"
+  "childSpanEvents"
 );
-module.exports = spanEventModel;
+module.exports = childSpanEventModel;

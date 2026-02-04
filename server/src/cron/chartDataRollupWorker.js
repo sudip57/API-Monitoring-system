@@ -1,7 +1,8 @@
-const express = require("express");
-const router = express.Router();
 const serviceDataModel = require('../models/serviceData')
-async function getStats(from,to){
+const chartDataModel = require('../models/chartData')
+async function runAggregation(){
+const to = new Date();
+const from = new Date(to.getTime() - 2*60 * 1000); 
 const result = await serviceDataModel.aggregate([
   {
     $match: {
@@ -12,8 +13,7 @@ const result = await serviceDataModel.aggregate([
 
   {
     $group: {
-      _id: null,
-
+      _id: "$projectKey",
       totalRequests: { $sum: "$requestCount" },
       totalDuration: { $sum: "$totalDuration" },
       totalErrors: { $sum: "$errorCount" },
@@ -23,9 +23,11 @@ const result = await serviceDataModel.aggregate([
 
   {
     $project: {
-      totalRequests: 1,
-      totalErrors: 1,
-
+         _id: 0,
+        projectKey:"$_id",
+        totalRequests: 1,
+        totalErrors: 1,
+        timestamp: to,
       avgLatency: {
         $cond: [
           { $gt: ["$totalRequests", 0] },
@@ -77,6 +79,13 @@ const result = await serviceDataModel.aggregate([
     }
   }
 ]);
-return result[0];
+console.log(result)
+  if(result.length){
+    await chartDataModel.insertMany(result)
+    console.log("Saved chart rollups:", result.length);
+  }else{
+    console.log("no traffic")
+  }
 }
-module.exports = getStats;
+setInterval(runAggregation, 2*60000);
+runAggregation();

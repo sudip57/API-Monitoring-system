@@ -1,16 +1,14 @@
-const APM = require("api-monitor-sdk");
+const {initialize,logger} = require("api-monitor-sdk");
 const express = require("express");
 const axios = require("axios");
-APM.initializeAPM({
+const app = express();
+initialize({
   projectKey: "test-project",
   serviceName: "service-a",
   env: "development",
-});
-const app = express();
-app.use(APM.apmMiddleware());
-
+},app);
 app.get("/user/:id", async (req, res, next) => {
-APM.logger('hello',req.apm.traceId);
+logger('hello',req.apm.traceId);
   if (req.params.id === "500") {
     throw new Error("Forced test error in /user/:id");
   }
@@ -20,7 +18,6 @@ APM.logger('hello',req.apm.traceId);
       traceId: req.apm?.traceId || null,
       spanId: req.apm?.spanId || null,
     };
-    // outbound HTTP call (axios instrumentation should inject headers)
     const response = await axios.get(
       `http://localhost:4001/orders/${req.params.id}`
     );
@@ -32,10 +29,6 @@ APM.logger('hello',req.apm.traceId);
     next(err);
   }
 });
-
-if (APM.errorMiddleware) {
-  app.use(APM.errorMiddleware());
-}
 
 app.listen(4000, () => {
   console.log("Service A running on 4000");

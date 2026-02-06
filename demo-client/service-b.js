@@ -1,14 +1,11 @@
-const APM = require("api-monitor-sdk");
+const {initialize,logger} = require("api-monitor-sdk");
 const express = require("express");
-
-APM.initializeAPM({
+const app = express();
+initialize({
   projectKey: "test-project",
   serviceName: "service-b",
   env: "development",
-});
-
-const app = express();
-app.use(APM.apmMiddleware());
+},app);
 app.get("/orders/:id", async (req, res, next) => {
   try {
     // simulate async work
@@ -23,10 +20,6 @@ app.get("/orders/:id", async (req, res, next) => {
     next(err);
   }
 });
-
-if (APM.errorMiddleware) {
-  app.use(APM.errorMiddleware());
-}
 
 app.listen(4001, () => {
   console.log("Service B running on 4001");

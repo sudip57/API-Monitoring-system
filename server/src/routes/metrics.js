@@ -1,9 +1,5 @@
 const express = require("express");
 const router = express.Router();
-// const getServiceStats = require("../controllers/datacontrollers/serviceStatsController")
-// const getRouteStats = require("../controllers/datacontrollers/routeStatsController")
-// const getStats = require("../controllers/datacontrollers/statsController")
-// const getChartData = require("../controllers/datacontrollers/chartDataController")
 const {getChartData,getRouteStats,getServiceStats,getStats} = require("../controllers")
 router.get("/serviceData",async(req,res)=>{
     const from = new Date(req.timeRange.from);

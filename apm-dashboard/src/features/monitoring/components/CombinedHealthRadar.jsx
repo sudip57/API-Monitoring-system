@@ -10,15 +10,15 @@ import {
 } from 'recharts'
 import { Activity, ShieldCheck, Zap, Clock } from 'lucide-react'
 import { useAppContext } from "../../../context/GlobalAppContext"
-import { useTimeSeries } from '../../../services/useTimeSeries'
+import { useChartData } from '../../../services/useChartData'
 
 const CombinedHealthRadar = () => {
   const { timeRange } = useAppContext()
-  const { chartData, loading, error } = useTimeSeries(timeRange.from, timeRange.to)
+  const { data, loading, error } = useChartData(timeRange.rangeMinutes)
 
   const radarData = useMemo(() => {
-    if (!chartData?.timeSeries?.length) return [];
-    const latest = chartData.timeSeries[chartData.timeSeries.length - 1];
+    if (!Array.isArray(data) || data.length === 0) return [];
+    const latest = data[data.length - 1];
 
     return [
       {
@@ -37,7 +37,7 @@ const CombinedHealthRadar = () => {
         originalValue: `${(latest.errorRate || 0).toFixed(2)}%`,
       }
     ];
-  }, [chartData]);
+  }, [data]);
 
   if (loading) return <div className="h-[550px] w-full rounded-2xl bg-[#09090b] border border-zinc-800 animate-pulse" />;
 

@@ -10,27 +10,33 @@ import {
 } from 'recharts'
 import { Activity, RefreshCw } from 'lucide-react'
 import { useAppContext } from "../../../context/GlobalAppContext"
-import { useTimeSeries } from '../../../services/useTimeSeries'
+import { useChartData } from '../../../services/useChartData'
 
 const formatRps = (v) => {
   if (v == null) return '0'
   return v < 1 ? v.toFixed(2) : Math.round(v)
 }
 
-const formatTime = (ts, from, to) => {
+const formatTime = (ts) => {
   const date = new Date(ts)
-  const diff = to - from
-  if (diff <= 24 * 60 * 60 * 1000) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
 const RequestChartCard = () => {
   const { timeRange } = useAppContext()
-  const { chartData, loading, error } = useTimeSeries(timeRange.from, timeRange.to)
+  const { data, loading, error } = useChartData(timeRange.rangeMinutes)
 
-  if (loading && !chartData) {
+  if (loading && !data) {
     return <div className="h-[320px] w-full rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse" />
   }
+
+  const chartData = Array.isArray(data) ? data.map(item => ({
+    timestamp: item.timestamp,
+    requestRate: item.avgThroughput,
+    requestCount: item.totalRequests,
+    avgLatency: item.avgLatency,
+    errorRate: item.errorRate
+  })) : []
 
   return (
     <div className="group relative w-full h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
@@ -70,7 +76,7 @@ const RequestChartCard = () => {
       {/* Chart Area */}
       <div className="flex-1 w-full min-h-0 relative z-10">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData?.timeSeries || []} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+          <AreaChart data={chartData || []} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
             <defs>
               <linearGradient id="reqRate" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
@@ -86,7 +92,7 @@ const RequestChartCard = () => {
             
             <XAxis
               dataKey="timestamp"
-              tickFormatter={(ts) => formatTime(ts, timeRange.from, timeRange.to)}
+              tickFormatter={(ts) => formatTime(ts)}
               stroke="rgba(255,255,255,0.3)"
               fontSize={10}
               tickLine={false}
@@ -120,7 +126,7 @@ const RequestChartCard = () => {
             />
 
             <Tooltip
-              labelFormatter={(label) => formatTime(label, timeRange.from, timeRange.to)}
+              labelFormatter={(label) => formatTime(label)}
               contentStyle={{ 
                 backgroundColor: '#111118', 
                 border: '1px solid rgba(255,255,255,0.1)', 

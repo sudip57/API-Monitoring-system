@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useServiceOverview } from '../../../services/useServiceOverview'
+import { useServiceData } from '../../../services/useServiceData'
 import { Server, Activity, AlertCircle, RefreshCw, ArrowUpRight } from "lucide-react";
 import { useAppContext } from "../../../context/GlobalAppContext";
 
 const ServiceTable = () => {
   const { timeRange } = useAppContext();
-  const { data, loading, error } = useServiceOverview(timeRange.from, timeRange.to);
-  console.log("servicetabledata---------------",data)
+  const { data, loading, error } = useServiceData(timeRange.rangeMinutes);
+  
   if (loading && !data) {
     return (
       <div className="w-full h-80 rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse flex flex-col items-center justify-center gap-4">
@@ -18,13 +18,13 @@ const ServiceTable = () => {
     );
   }
 
-  if (error || !data || !data.services || data.services.length === 0) {
+  if (error || !data || !data.servicesData || data.servicesData.length === 0) {
     return (
       <div className="rounded-2xl border border-white/10 bg-[#0c0c12] p-12 text-center shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent pointer-events-none" />
         <AlertCircle className="mx-auto text-red-500/40 mb-4" size={40} />
         <h3 className="text-white font-semibold mb-1">No Telemetry Detected</h3>
-        <p className="text-zinc-500 text-xs max-w-xs mx-auto">Check your service connection or adjust the time range to see active services.</p>
+        <p className="text-zinc-500 metric-xs text-center max-w-xs mx-auto">Check your service connection or adjust the time range to see active services.</p>
       </div>
     );
   }
@@ -43,12 +43,12 @@ const ServiceTable = () => {
             <Server size={20} className="text-violet-400" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+            <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
               Service Registry
               {loading && <RefreshCw size={12} className="animate-spin text-violet-400/50" />}
-            </h2>
+            </h3>
             <p className="text-[10px] text-zinc-500 mt-0.5 uppercase tracking-widest font-bold">
-              {data.services.length} Nodes Active
+              {data.servicesData.length} Nodes Active
             </p>
           </div>
         </div>
@@ -62,17 +62,17 @@ const ServiceTable = () => {
       <div className="overflow-x-auto relative z-10">
         <table className="w-full text-sm text-left border-collapse">
           <thead>
-            <tr className="text-[10px] uppercase tracking-[0.15em] text-zinc-300 bg-white/[0.02]">
-              <th className="px-6 py-4 font-bold border-b border-white/5">Service Identity</th>
-              <th className="px-6 py-4 text-right font-bold border-b border-white/5">Avg Latency</th>
-              <th className="px-6 py-4 text-right font-bold border-b border-white/5">P95 Burst</th>
-              <th className="px-6 py-4 text-right font-bold border-b border-white/5">Error Rate</th>
-              <th className="px-6 py-4 text-center font-bold border-b border-white/5">Status</th>
+            <tr className=" bg-white/[0.02]">
+              <th className="px-6 py-4 metric-label  border-b border-white/5">Service Identity</th>
+              <th className="px-6 py-4 metric-label  border-b border-white/5">Avg Latency</th>
+              <th className="px-6 py-4 metric-label  border-b border-white/5">P95 Burst</th>
+              <th className="px-6 py-4 metric-label  border-b border-white/5">Error Rate</th>
+              <th className="px-6 py-4 metric-label text-center  border-b border-white/5">Status</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-white/[0.03]">
-            {data.services.map((svc) => (
+            {data.servicesData.map((svc) => (
               <tr
                 key={svc.serviceName}
                 className="group/row hover:bg-white/[0.03] transition-colors duration-150"
@@ -91,27 +91,27 @@ const ServiceTable = () => {
                 </td>
                 
                 <td className="px-6 py-4 text-right">
-                  <div className="text-zinc-100 font-mono text-xs font-semibold">{svc.avgLatency}ms</div>
+                  <div className="text-zinc-100 font-mono metric-xs text-center font-semibold">{svc.stats.avgLatency}ms</div>
                 </td>
 
                 <td className="px-6 py-4 text-right">
-                  <div className="text-zinc-100 font-mono text-xs font-semibold">{svc.p95Latency}ms</div>
+                  <div className="text-zinc-100 font-mono metric-xs text-center font-semibold">{svc.stats.p95Latency}ms</div>
                 </td>
 
                 <td className="px-6 py-4 text-right">
-                  <div className={`text-xs font-mono font-bold ${parseFloat(svc.errorRate) > 1 ? 'text-rose-400' : 'text-zinc-300'}`}>
-                    {svc.errorRate}%
+                  <div className={`metric-xs text-center font-mono font-bold ${parseFloat(svc.stats.errorRate) > 1 ? 'text-rose-400' : 'text-zinc-300'}`}>
+                    {svc.stats.errorRate}%
                   </div>
                 </td>
 
                 <td className="px-6 py-4 text-center">
                   <div className="flex justify-center">
                     <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all duration-300
-                        ${svc.status.label.toLowerCase() === 'healthy' 
+                        ${svc.stats.healthStatus.toLowerCase() === 'healthy' 
                           ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]' 
                           : 'bg-rose-500/5 border-rose-500/20 text-rose-400 shadow-[0_0_15px_-5px_rgba(244,63,94,0.3)]'}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${svc.status.label.toLowerCase() === 'healthy' ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
-                      {svc.status.label}
+                      <span className={`w-1.5 h-1.5 rounded-full ${svc.stats.healthStatus.toLowerCase() === 'healthy' ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
+                      {svc.stats.healthStatus}
                     </span>
                   </div>
                 </td>

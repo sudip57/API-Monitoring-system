@@ -11,7 +11,7 @@ import {
 } from 'recharts'
 import { Clock, Zap } from 'lucide-react'
 import { useAppContext } from "../../../context/GlobalAppContext"
-import { useTimeSeries } from '../../../services/useTimeSeries'
+import { useChartData } from '../../../services/useChartData'
 
 const formatLatency = (v) => {
   if (v == null) return '–'
@@ -19,16 +19,14 @@ const formatLatency = (v) => {
   return `${(v / 1000).toFixed(2)}s`
 }
 
-const formatTime = (ts, from, to) => {
+const formatTime = (ts) => {
   const date = new Date(ts)
-  const diff = to - from
-  if (diff <= 24 * 60 * 60 * 1000) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
 const LatencyChartCard = () => {
   const { timeRange } = useAppContext()
-  const { chartData, loading, error } = useTimeSeries(timeRange.from, timeRange.to)
+  const { data, loading, error } = useChartData(timeRange.rangeMinutes)
 
   if (loading) {
     return <div className="h-[320px] w-full rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse" />
@@ -42,6 +40,12 @@ const LatencyChartCard = () => {
       </div>
     )
   }
+
+  const chartData = Array.isArray(data) ? data.map(item => ({
+    timestamp: item.timestamp,
+    avgLatency: item.avgLatency,
+    p95Latency: item.p95Latency
+  })) : []
 
   return (
     <div className="group relative w-full h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
@@ -77,12 +81,12 @@ const LatencyChartCard = () => {
       {/* Chart */}
       <div className="flex-1 w-full min-h-0 relative z-10">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={chartData?.timeSeries || []} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
+          <ComposedChart data={chartData || []} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
             <CartesianGrid stroke="rgba(255,255,255,0.03)" vertical={false} />
             
             <XAxis
               dataKey="timestamp"
-              tickFormatter={(ts) => formatTime(ts, timeRange.from, timeRange.to)}
+              tickFormatter={(ts) => formatTime(ts)}
               stroke="rgba(255,255,255,0.3)"
               fontSize={10}
               tickLine={false}

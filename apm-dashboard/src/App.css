@@ -1,0 +1,166 @@
+:root {
+  --font-heading: "Poppins", "Segoe UI", Roboto, sans-serif;
+  --font-body: "Inter", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --weight-bold: 700;
+  --weight-semi: 600;
+  --weight-medium: 500;
+  --weight-regular: 400;
+
+  /* ===== DESKTOP DEFAULT ===== */
+
+  /* Headings */
+  --h1: 36px;
+  --h2: 30px;
+  --h3: 22px;
+  --h4: 18px;
+  --h5: 15px;
+  --h6: 13px;
+
+  /* Metrics */
+  --metric-xl: 42px;
+  --metric-lg: 32px;
+  --metric-md: 24px;
+  --metric-sm: 18px;
+  --metric-xs: 12px;
+}
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 768px) {
+  :root {
+    --h1: 28px;
+    --h2: 24px;
+    --h3: 20px;
+    --h4: 16px;
+    --h5: 14px;
+    --h6: 12px;
+
+    --metric-xl: 30px;
+    --metric-lg: 24px;
+    --metric-md: 20px;
+    --metric-sm: 16px;
+    --metric-xs: 12px;
+  }
+}
+
+/* ===== HEADINGS ===== */
+
+h1 {
+  font-family: var(--font-heading);
+  font-size: var(--h1);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-family: var(--font-heading);
+  font-size: var(--h3);
+  font-weight: var(--weight-semi);
+  letter-spacing: -0.01em;
+}
+
+h4 {
+  font-family: var(--font-heading);
+  font-size: var(--h4);
+  font-weight: var(--weight-semi);
+}
+
+h5 {
+  font-family: var(--font-heading);
+  font-size: var(--h5);
+  font-weight: var(--weight-medium);
+}
+
+h6 {
+  font-family: var(--font-heading);
+  font-size: var(--h6);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+
+/* ===== LABELS ===== */
+
+.label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-text {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: var(--weight-semi);
+  letter-spacing: 0.04em;
+}
+
+/* ===== METRICS ===== */
+
+.metric-xl {
+  font-family: var(--font-heading);
+  font-size: var(--metric-xl);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-lg {
+  font-family: var(--font-heading);
+  font-size: var(--metric-lg);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-md {
+  font-family: var(--font-heading);
+  font-size: var(--metric-md);
+  font-weight: var(--weight-semi);
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-sm {
+  font-family: var(--font-heading);
+  font-size: var(--metric-sm);
+  font-weight: var(--weight-semi);
+  font-variant-numeric: tabular-nums;
+}
+.metric-xs {
+  font-family: var(--font-heading);
+  font-size: var(--metric-xs);
+  font-weight: var(--weight-semi);
+  font-variant-numeric: tabular-nums;
+}
+.metric-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+text-align: center;
+}
+
+/* ===== LOGS / TRACE IDS ===== */
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-regular);
+  font-variant-numeric: tabular-nums;
+}
+
+.trace-id {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.03em;
+}

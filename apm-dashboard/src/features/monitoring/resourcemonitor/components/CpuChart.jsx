@@ -25,7 +25,7 @@ export function CpuChart({ data }) {
       const ts = Math.floor(new Date(item.timestamp).getTime() / 2000) * 2000;
       if (!buckets[ts]) buckets[ts] = { time: ts };
       
-      const cpuVal = item.metrics?.cpu?.percent || 0;
+      const cpuVal = item.cpu?.percent || 0;
       buckets[ts][sName] = Math.max(0, Math.min(100, cpuVal)); 
     });
 

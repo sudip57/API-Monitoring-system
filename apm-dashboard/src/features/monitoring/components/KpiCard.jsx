@@ -21,7 +21,7 @@ const KPI_STYLES = {
     title: "text-sky-400/80",
     accent: "text-sky-400",
   },
-  Throughput: {
+  "Throughput": {
     bar: "bg-emerald-400",
     glow: "shadow-emerald-500/10",
     title: "text-emerald-400/80",
@@ -122,14 +122,12 @@ const KpiCard = ({
 
   return (
     <div className={`${base} ${styles.glow} p-5 group cursor-default`}>
-      {/* 🔄 Small Loader (top-right) */}
       {loading && hasData && (
         <div className="absolute top-3 right-3 text-white/40 animate-spin">
           <Loader2 size={14} />
         </div>
       )}
 
-      {/* Dynamic Background Glow */}
       <div
         className={`absolute -right-4 -top-4 w-20 h-20 rounded-full blur-3xl opacity-20 transition-opacity group-hover:opacity-40 ${styles.bar}`}
       />
@@ -140,11 +138,11 @@ const KpiCard = ({
           <span
             className={`h-3 w-[2px] rounded-full ${styles.bar} shadow-[0_0_8px_rgba(255,255,255,0.2)]`}
           />
-          <p
-            className={`text-[10px] uppercase font-bold tracking-widest ${styles.title}`}
+          <h6
+            className={` uppercase font-bold tracking-widest ${styles.title}`}
           >
             {title}
-          </p>
+          </h6>
         </div>
 
         {/* Trend Indicator */}
@@ -172,7 +170,7 @@ const KpiCard = ({
 
       {/* Main Value */}
       <div className="relative z-10 flex items-baseline gap-1.5">
-        <span className="text-3xl font-bold tracking-tighter text-white font-mono">
+        <span className="metric-lg font-bold tracking-tighter text-white font-mono">
           {formatValue(value, unit)}
         </span>
 

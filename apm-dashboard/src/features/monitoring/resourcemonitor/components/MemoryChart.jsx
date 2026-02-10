@@ -25,7 +25,7 @@ export function MemoryChart({ data = [] }) {
       const ts = Math.floor(new Date(item.timestamp).getTime() / 2000) * 2000;
       if (!buckets[ts]) buckets[ts] = { time: ts };
       
-      const memVal = item.metrics?.memory?.rssMB || 0;
+      const memVal = item.memory?.rssMB || 0;
       buckets[ts][sName] = Math.max(0, memVal); 
     });
 

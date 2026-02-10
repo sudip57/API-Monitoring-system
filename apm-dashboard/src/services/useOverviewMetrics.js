@@ -1,32 +1,45 @@
 import { useEffect, useState } from "react";
-export function useOverviewMetrics(from,to){
-    const [data,setdata]=useState(null);
-    const [loading,setloading] = useState(true);
+
+export function useOverviewMetrics(timeRange){
+    const [data, setdata] = useState(null);
+    const [loading, setloading] = useState(true);
     const [error, seterror] = useState(false);
+    
     useEffect(() => {
       let cancelled = false;
+      
       async function fetchMetrics(){
         try{
             setloading(true);
             const res = await fetch(
-                `https://api-monitoring-system-szih.onrender.com/api/overview?from=${from}&to=${to}`
+                `https://api-monitoring-system-szih.onrender.com/ranged/metrics/stats?timeRange=${timeRange}`
             )
+            
+            if (!res.ok) {
+                throw new Error(`API error: ${res.status}`);
+            }
+            
             const json = await res.json();
             if(!cancelled){
                 setdata(json);
                 seterror(false);
             }
-        }catch{
-              if (!cancelled) seterror(true);
-      }finally {
-        if (!cancelled) setloading(false);
+        } catch(err){
+            if (!cancelled) {
+                console.error("Error fetching metrics:", err);
+                seterror(true);
+            }
+        } finally {
+            if (!cancelled) setloading(false);
+        }
       }
-    
-    }
-    fetchMetrics();
+      
+      fetchMetrics();
+      
       return () => {
         cancelled = true;
       }
-    }, [from,to])
+    }, [timeRange])
+    
     return { data, loading, error };
 }

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Clock, ChevronDown, RefreshCw, Menu } from "lucide-react";
 import { useAppContext } from "../../context/GlobalAppContext";
-import { useTimeSeries } from "../../services/useTimeSeries";
+import { useChartData } from "../../services/useChartData";
 
 const Navbar = ({ open, setOpen }) => {
-  const { timeRange, setTimeRange } = useAppContext();
-  const { chartData, loading, error } = useTimeSeries(timeRange.from, timeRange.to);
+  const { timeRange } = useAppContext();
+  const { data, loading, error } = useChartData(timeRange.rangeMinutes);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -26,14 +26,10 @@ const Navbar = ({ open, setOpen }) => {
     { label: "Last 24 hours", value: 1440 },
   ];
 
- const handleRefresh = (minutes) => {
-  const now = Date.now();
-  const from = now - minutes * 60 * 1000;
-
-  timeRange.setRangeMinutes(minutes);
-  timeRange.setRange({ from, to: now });
-  setIsMenuOpen(false);
-};
+  const handleRefresh = (minutes) => {
+    timeRange.setRangeMinutes(minutes);
+    setIsMenuOpen(false);
+  };
 
 
   return (

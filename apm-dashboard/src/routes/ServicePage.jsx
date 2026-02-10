@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import { useAppContext } from '../context/GlobalAppContext';
-import { useServiceOverview } from '../services/useServiceOverview';
+import { useServiceData } from '../services/useServiceData';
 import TimeRangePicker from '../components/ui/TimeRangePicker';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLiveMetrics } from '../features/monitoring/hooks/useLiveMetrics';
@@ -13,17 +13,19 @@ import {
 
 const ServicePage = () => {
     const { timeRange } = useAppContext();
-    const { data, loading, error } = useServiceOverview(timeRange.from, timeRange.to);
+    const { data, loading, error } = useServiceData(timeRange.rangeMinutes);
     const { latest, series } = useLiveMetrics({projectkey:"test-project"});
-    console.log(latest);
     const navigate = useNavigate();
     const handleClick  = (serviceName)=>{
         navigate(`/services/${serviceName}`);
     }
-    console.log("servicepage data ---------------",data)
+    
+    const services = data?.servicesData || [];
+    
     if (loading && !data) {
     return (
       <div className="w-full h-80 rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse flex flex-col items-center justify-center gap-4">
+        <RefreshCw size={24} className="animate-spin text-violet-500/40" />
         <div className="text-zinc-500 text-[10px] tracking-[0.2em] uppercase font-bold">
           Mapping Service Topology
         </div>
@@ -38,7 +40,7 @@ const ServicePage = () => {
         <div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Service Directory</h1>
           <p className="text-zinc-500 mt-2 flex items-center gap-2">
-            Monitoring <span className="text-violet-400 font-bold">{data.services.length}</span> active services
+            Monitoring <span className="text-violet-400 font-bold">{services.length}</span> active services
           </p>
         </div>
       </div>
@@ -57,22 +59,22 @@ const ServicePage = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.services.map((svc) => (
+        {services.map((svc) => (
           <div 
             key={svc.serviceName} 
             className="group relative bg-[#0c0c12] border border-white/10 rounded-2xl p-6 hover:border-violet-500/40 hover:bg-[#11111a] transition-all cursor-pointer shadow-xl overflow-hidden"
           >
             {/* Health Glow Effect */}
             <div className={`absolute -top-12 -right-12 w-24 h-24 blur-[60px] opacity-20 pointer-events-none transition-colors
-              ${svc.status.label === 'Healthy' ? 'bg-emerald-500' : svc.status.label === 'Degraded' ? 'bg-amber-500' : 'bg-rose-500'}
+              ${svc.stats.healthStatus === 'Healthy' ? 'bg-emerald-500' : svc.stats.healthStatus === 'Degraded' ? 'bg-amber-500' : 'bg-rose-500'}
             `} />
 
             {/* Card Header */}
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-3">
                 <div className={`p-2.5 rounded-xl border transition-colors
-                  ${svc.status.label === 'Healthy' ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' : 
-                    svc.status.label === 'Degraded' ? 'bg-amber-500/5 border-amber-500/20 text-amber-400' : 
+                  ${svc.stats.healthStatus === 'Healthy' ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' : 
+                    svc.stats.healthStatus === 'Degraded' ? 'bg-amber-500/5 border-amber-500/20 text-amber-400' : 
                     'bg-rose-500/5 border-rose-500/20 text-rose-400'}
                 `}>
                   <Server size={20} />
@@ -87,15 +89,15 @@ const ServicePage = () => {
             <div className="grid grid-cols-3 gap-4 mb-6 border-y border-white/5 py-4">
               <div className="text-center border-r border-white/5">
                 <p className="text-[9px] text-zinc-600 uppercase font-black mb-1">Latency</p>
-                <p className="text-sm font-mono text-white font-bold">{svc.avgLatency}ms</p>
+                <p className="text-sm font-mono text-white font-bold">{svc.stats.avgLatency}ms</p>
               </div>
               <div className="text-center border-r border-white/5">
                 <p className="text-[9px] text-zinc-600 uppercase font-black mb-1">Errors</p>
-                <p className={`text-sm font-mono font-bold ${svc.errorRate > 1 ? 'text-rose-400' : 'text-white'}`}>{svc.errorRate}%</p>
+                <p className={`text-sm font-mono font-bold ${svc.stats.errorRate > 1 ? 'text-rose-400' : 'text-white'}`}>{svc.stats.errorRate}%</p>
               </div>
               <div className="text-center">
                 <p className="text-[9px] text-zinc-600 uppercase font-black mb-1">Traffic</p>
-                <p className="text-sm font-mono text-white font-bold">{svc.avgThroughputRPS >= 1000 ? `${(svc.avgThroughputRPS/1000).toFixed(1)}k` : svc.avgThroughputRPS}</p>
+                <p className="text-sm font-mono text-white font-bold">{svc.stats.avgThroughPut >= 1000 ? `${(svc.stats.avgThroughPut/1000).toFixed(1)}k` : svc.stats.avgThroughPut}</p>
               </div>
             </div>
 

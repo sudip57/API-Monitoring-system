@@ -3,46 +3,52 @@ import { useEffect, useRef, useState } from "react";
 export function useLiveMetrics(props) {
   const [latest, setLatest] = useState(null);
   const [series, setSeries] = useState([]);
-  const {projectkey,servicename} = props;
-  console.log("useLiveMetrics Props:", props);
-  let url;
+  const { projectkey, servicename } = props;
   const lastTimestampRef = useRef(null);
-  if(!servicename){
-    url = `https://api-monitoring-system-szih.onrender.com/resourcedata?`+(projectkey?`projectkey=${projectkey}`:``)
-  }else{
-    url = `https://api-monitoring-system-szih.onrender.com/resourcedata?`+(projectkey?`projectkey=${projectkey}`:``) + (servicename ? `&servicename=${servicename}` : "");
-  }
-  console.log("useLiveMetrics Fetch URL:", url);
+  
+  let url = `https://api-monitoring-system-szih.onrender.com/resourcedata?`;
+  if (projectkey) url += `projectkey=${projectkey}`;
+  if (servicename) url += `${projectkey ? '&' : ''}servicename=${servicename}`;
+  
   useEffect(() => {
     let alive = true;
+    
     async function fetchMetrics() {
-      const res = await fetch(url);
-      console.log("Fetch response:", res);
-      const json = await res.json();
-      console.log("Fetched Metrics JSON:", json);
-      if (!alive) return;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        
+        const json = await res.json();
+        if (!alive) return;
 
-      setLatest(json);
-      if(json.timeSeries){
-        const newPoints = json.timeSeries.filter(p => {
-        const t = new Date(p.timestamp).getTime();
-        return !lastTimestampRef.current || t > lastTimestampRef.current;
-        });
-
-        if (newPoints.length > 0) {
-          lastTimestampRef.current = new Date(
-            newPoints[newPoints.length - 1].timestamp
-          ).getTime();
-
-          setSeries(prev => {
-            const merged = [...prev, ...newPoints];
-
-            // keep last 60 points (sliding window)
-            return merged.slice(-60);
+        // New endpoint structure: { data: [...] }
+        const dataArray = json.data || [];
+        
+        if (dataArray.length > 0) {
+          // Set latest to the most recent item
+          setLatest(dataArray[dataArray.length - 1]);
+          
+          // Filter new points based on timestamp
+          const newPoints = dataArray.filter(p => {
+            const t = new Date(p.timestamp).getTime();
+            return !lastTimestampRef.current || t > lastTimestampRef.current;
           });
+
+          if (newPoints.length > 0) {
+            lastTimestampRef.current = new Date(
+              newPoints[newPoints.length - 1].timestamp
+            ).getTime();
+
+            setSeries(prev => {
+              const merged = [...prev, ...newPoints];
+              // keep last 60 points (sliding window)
+              return merged.slice(-60);
+            });
+          }
         }
+      } catch (err) {
+        console.error("Error fetching metrics:", err);
       }
-      
     }
 
     fetchMetrics();
@@ -52,7 +58,8 @@ export function useLiveMetrics(props) {
       alive = false;
       clearInterval(id);
     };
-  }, []);
-  console.log("LiveMetrics Hook - Latest:", series);
+  }, [url]);
+  
   return { latest, series };
 }
+

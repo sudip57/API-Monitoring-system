@@ -1,10 +1,11 @@
 import KpiCard from "./components/KpiCard";
 import { useOverviewMetrics } from "../../services/useOverviewMetrics";
 import { useAppContext } from "../../context/GlobalAppContext";
+
 export default function OverviewKpis() {
   const { timeRange } = useAppContext()
-  const { data, loading, error } = useOverviewMetrics(timeRange.from, timeRange.to);
-  console.log(data);
+  const { data, loading, error } = useOverviewMetrics(timeRange.rangeMinutes);
+  
   return (
   <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
     <KpiCard
@@ -34,7 +35,7 @@ export default function OverviewKpis() {
     />
 
     <KpiCard
-      title="Avg p95 Latency"
+      title="P95 Latency"
       value={data?.p95Latency}
       unit="ms"
       loading={loading}
@@ -44,7 +45,7 @@ export default function OverviewKpis() {
 
     <KpiCard
       title="Throughput"
-      value={data?.avgThroughputRPS}
+      value={data?.avgThroughput}
       unit="rps"
       loading={loading}
       error={error}
@@ -54,3 +55,4 @@ export default function OverviewKpis() {
 
   );
 }
+

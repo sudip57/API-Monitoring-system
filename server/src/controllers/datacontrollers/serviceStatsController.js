@@ -1,5 +1,5 @@
-const serviceDataModel = require('../models/serviceData')
-const resourceMetricsModel = require('../models/raw/resourceMetricsModel')
+const serviceDataModel = require('../../models/serviceData')
+const resourceMetricsModel = require('../../models/raw/resourceMetricsModel')
 function getServiceHealth({ errorRate, totalRequests }) {
   if (totalRequests < 50) {
     return "No Data"
@@ -18,7 +18,7 @@ function getServiceHealth({ errorRate, totalRequests }) {
   }
   return "Critical"
 }
-async function getServcieStats(from,to){
+async function getServiceStats(from,to){
     const now = Date.now();
     const windowSeconds = (to - from) / 1000;
     const serviceInfo = await resourceMetricsModel.aggregate([
@@ -38,18 +38,18 @@ async function getServcieStats(from,to){
     const serviceData = serviceInfo.map((item)=>{
         const timestamp = new Date(item.timestamp)
         const diff = now-timestamp;
-        let serviceSatus;
+        let serviceStatus;
         let upTime
         if(diff>60000){
             serviceStatus = "down";
             upTime=0;
         }else{
-            serviceSatus = "up";
+            serviceStatus = "up";
             upTime = item.upTime;
         }
         return {
                 serviceName:item._id,
-                serviceSatus,
+                serviceStatus,
                 upTime,
             }
     })
@@ -106,4 +106,4 @@ async function getServcieStats(from,to){
     })
     return payload
 }
-module.exports = getServcieStats;
+module.exports = getServiceStats;

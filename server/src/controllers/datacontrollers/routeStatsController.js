@@ -1,4 +1,4 @@
-const routeDataModel = require("../models/routeData")
+const routeDataModel = require("../../models/routeData")
 async function getRouteStats(config){
     const {serviceName,from,to} = config;
     const routeAgg = await routeDataModel.aggregate([

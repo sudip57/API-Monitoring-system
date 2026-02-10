@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const serviceDataModel = require('../models/serviceData')
+const serviceDataModel = require('../../models/serviceData')
 async function getStats(from,to){
 const result = await serviceDataModel.aggregate([
   {

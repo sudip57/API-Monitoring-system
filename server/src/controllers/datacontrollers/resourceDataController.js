@@ -1,4 +1,4 @@
-const resourceMetricsModel = require("../models/raw/resourceMetricsModel");
+const resourceMetricsModel = require("../../models/raw/resourceMetricsModel");
 async function getResourceData(projectKey){
 const latestPerService = await resourceMetricsModel.aggregate([
       {

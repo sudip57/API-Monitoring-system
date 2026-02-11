@@ -14,11 +14,10 @@ export function useOverviewMetrics(timeRange){
             const res = await fetch(
                 `https://api-monitoring-system-szih.onrender.com/ranged/metrics/stats?timeRange=${timeRange}`
             )
-            
+            console.log(res)
             if (!res.ok) {
                 throw new Error(`API error: ${res.status}`);
             }
-            
             const json = await res.json();
             if(!cancelled){
                 setdata(json);

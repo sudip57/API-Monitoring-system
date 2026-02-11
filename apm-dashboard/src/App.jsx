@@ -6,10 +6,7 @@ import Layout from "./components/layout/Layout"
 
 function App() {
   const [rangeMinutes, setRangeMinutes] = useState(1440)
-  
-  // ---- Service scope ----
   const [serviceName, setServiceName] = useState(null);
-  // ---- Route scope ----
   const [route, setRoute] = useState(null);
   
   const contextValue = useMemo(

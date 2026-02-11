@@ -21,13 +21,17 @@ router.get("/routeData",async(req,res)=>{
 router.get("/stats",async (req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
-    const data = await getStats(from,to);
-    res.send(data);
+    const overviewData = await getStats(from,to);
+    res.send({
+        overviewData
+    });
 })
 router.get("/chartData",async (req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
-    const data = await getChartData(from,to);
-    res.send(data);
+    const chartData = await getChartData(from,to);
+    res.send({
+        chartData
+    });
 })
 module.exports = router

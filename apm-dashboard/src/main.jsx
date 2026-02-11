@@ -8,6 +8,7 @@ import './index.css'
 import App from './App'
 import DashboardPage from './routes/DashboardPage';
 import ServiceDetailPage from './routes/ServiceDetailPage';
+import AlertPage from './routes/AlertPage';
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Routes>
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="routes" element={<RoutesPage/>} />
           <Route path="errors" element={<ErrorAnalysisPage/>} />
           <Route path="logs" element={<LogExplorerPage/>} />
+          <Route path="alerts" element={<AlertPage/>} />
         </Route>
       </Routes>
     </BrowserRouter>

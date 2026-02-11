@@ -45,10 +45,6 @@ const Navbar = ({ open, setOpen }) => {
         >
           <Menu size={20} className="text-slate-300 hover:text-white" />
         </button>
-
-        <h1 className="text-xs sm:text-base font-semibold text-white tracking-wide hidden sm:block">
-          Application Performance Monitor
-        </h1>
         <h1 className="text-sm font-semibold text-white sm:hidden">
           APM
         </h1>

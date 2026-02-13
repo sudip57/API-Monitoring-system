@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from "react-router-dom";
 import { useAppContext } from '../context/GlobalAppContext';
+import { useServiceData } from '../services/useServiceData';
 import { 
   Activity, ShieldCheck, Zap, Box, 
   Clock, HardDrive, Share2, AlertTriangle,

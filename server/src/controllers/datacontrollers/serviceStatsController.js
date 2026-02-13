@@ -18,12 +18,18 @@ function getServiceHealth({ errorRate, totalRequests }) {
   }
   return "Critical"
 }
-async function getServiceStats(from,to){
+async function getServiceStats(config){
+    const {from,to,serviceName} = config;
     const now = Date.now();
+    const match = {
+      "meta.projectKey": "test-project"
+    };
+    if (serviceName) {
+      match["meta.serviceName"] = serviceName;
+    }
     const windowSeconds = (to - from) / 1000;
     const serviceInfo = await resourceMetricsModel.aggregate([
-        { $match: { "meta.projectKey":"test-project" } },
-
+        { $match:match},
         { $sort: { timestamp:-1 } },
 
         {
@@ -54,10 +60,16 @@ async function getServiceStats(from,to){
             }
     })
     const serviceMap = Object.create(null);
+    const match2 = {
+      "projectKey": "test-project"
+    };
+    if (serviceName) {
+      match2["serviceName"] = serviceName;
+    }
     const serviceRollup = await serviceDataModel.aggregate([
         {
         $match: {
-          "projectKey": "test-project",
+          ...match2,
           timestamp: { $gte: from, $lte: to }
         }
       },
@@ -71,7 +83,6 @@ async function getServiceStats(from,to){
         }
       },
         ]);
-    console.log(serviceRollup)
     const serviceStats = serviceRollup.map(svc=>{
         const avgThroughPut = svc.totalRequests/windowSeconds;
         const avgLatency = svc.totalDuration/svc.totalRequests;

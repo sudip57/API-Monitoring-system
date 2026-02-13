@@ -4,7 +4,8 @@ const {getChartData,getRouteStats,getServiceStats,getStats} = require("../contro
 router.get("/serviceData",async(req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
-    const payload = await getServiceStats(from,to);
+    const {serviceName} = req.query;
+    const payload = await getServiceStats({from,to,serviceName});
     res.send({
         servicesData:payload,
     })

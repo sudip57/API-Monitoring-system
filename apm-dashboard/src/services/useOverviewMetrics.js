@@ -20,7 +20,7 @@ export function useOverviewMetrics(timeRange){
             }
             const json = await res.json();
             if(!cancelled){
-                setdata(json);
+                setdata(json.overviewData);
                 seterror(false);
             }
         } catch(err){

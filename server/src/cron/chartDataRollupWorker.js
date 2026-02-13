@@ -1,12 +1,12 @@
 const serviceDataModel = require('../models/serviceData')
 const chartDataModel = require('../models/chartData')
-async function runAggregation(){
+async function runChartDataAggregation(){
 const to = new Date();
-const from = new Date(to.getTime() - 2*60 * 1000); 
+const from = new Date(to.getTime() - 60*1000); 
 const result = await serviceDataModel.aggregate([
   {
     $match: {
-      projectKey: "test-project",
+      "projectKey": "test-project",
       timestamp: { $gte: from, $lte: to }
     }
   },
@@ -79,7 +79,6 @@ const result = await serviceDataModel.aggregate([
     }
   }
 ]);
-console.log(result)
   if(result.length){
     await chartDataModel.insertMany(result)
     console.log("Saved chart rollups:", result.length);
@@ -87,5 +86,4 @@ console.log(result)
     console.log("no traffic")
   }
 }
-setInterval(runAggregation, 2*60000);
-runAggregation();
+module.exports = runChartDataAggregation;

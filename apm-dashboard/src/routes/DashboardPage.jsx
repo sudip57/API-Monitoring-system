@@ -29,7 +29,7 @@ const DashboardPage = () => {
       <div>
         <h2 className="mb-2">Traffic & Services</h2>
 
-        <div className="flex flex-col md:flex-row gap-3">
+        <div className="flex flex-col md:flex-row gap-3 w-full">
           <RequestChartCard/>
           <ServiceTable/>
         </div>

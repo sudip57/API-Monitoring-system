@@ -12,6 +12,7 @@ import {
 import { Clock, Zap } from 'lucide-react'
 import { useAppContext } from "../../../context/GlobalAppContext"
 import { useChartData } from '../../../services/useChartData'
+import NoTraffic from './NoTraffic'
 
 const formatLatency = (v) => {
   if (v == null) return '–'
@@ -28,10 +29,11 @@ const LatencyChartCard = () => {
   const { timeRange } = useAppContext()
   const { data, loading, error } = useChartData(timeRange.rangeMinutes)
 
-  if (loading) {
-    return <div className="h-[320px] w-full rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse" />
+   if (loading && !data) {
+    return (
+      <div className="h-[320px] w-full rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse" />
+    )
   }
-
   if (error) {
     return (
       <div className="h-[320px] w-full rounded-2xl bg-white/[0.03] border border-red-500/20 flex flex-col items-center justify-center gap-2">
@@ -77,7 +79,10 @@ const LatencyChartCard = () => {
           </div>
         </div>
       </div>
-
+    {chartData.length===0?(
+    <NoTraffic/>
+      ):(
+      <>
       {/* Chart */}
       <div className="flex-1 w-full min-h-0 relative z-10">
         <ResponsiveContainer width="100%" height="100%">
@@ -144,6 +149,7 @@ const LatencyChartCard = () => {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
+      </>)}
     </div>
   )
 }

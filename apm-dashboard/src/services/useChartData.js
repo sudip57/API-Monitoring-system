@@ -21,7 +21,7 @@ export function useChartData(timeRange) {
                 
                 const json = await res.json();
                 if (!cancelled) {
-                    setdata(json);
+                    setdata(json.chartData);
                     seterror(false);
                 }
             } catch (err) {

@@ -24,6 +24,7 @@ const Navbar = ({ open, setOpen }) => {
     { label: "Last 15 minutes", value: 15 },
     { label: "Last 60 minutes", value: 60 },
     { label: "Last 24 hours", value: 1440 },
+    { label: "Last 48 hours", value: 2880 },
   ];
 
   const handleRefresh = (minutes) => {

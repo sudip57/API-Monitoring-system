@@ -30,7 +30,7 @@ const ServiceTable = () => {
   }
 
   return (
-    <div className="group relative w-full rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl overflow-hidden transition-all hover:border-white/20">
+    <div className="group relative md:w-[60%] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl overflow-hidden transition-all hover:border-white/20 ">
       
       {/* Refractive Glass Light Effect */}
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-violet-600/10 blur-[100px] pointer-events-none" />
@@ -64,10 +64,11 @@ const ServiceTable = () => {
           <thead>
             <tr className=" bg-white/[0.02]">
               <th className="px-6 py-4 metric-label  border-b border-white/5">Service Identity</th>
+              <th className="px-6 py-4 metric-label  border-b border-white/5">Status</th>
               <th className="px-6 py-4 metric-label  border-b border-white/5">Avg Latency</th>
               <th className="px-6 py-4 metric-label  border-b border-white/5">P95 Burst</th>
               <th className="px-6 py-4 metric-label  border-b border-white/5">Error Rate</th>
-              <th className="px-6 py-4 metric-label text-center  border-b border-white/5">Status</th>
+              <th className="px-6 py-4 metric-label text-center  border-b border-white/5">Health</th>
             </tr>
           </thead>
 
@@ -89,7 +90,40 @@ const ServiceTable = () => {
                     </div>
                   </div>
                 </td>
-                
+                <td className="px-6 py-4 text-right">
+                 <div className="flex justify-center items-center gap-1.5">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        svc.serviceStatus === "up"
+                          ? "bg-emerald-400"
+                          : "bg-rose-400"
+                      }`}
+                    />
+
+                    <span
+                      className={`text-[11px] font-medium ${
+                        svc.serviceStatus === "up"
+                          ? "text-emerald-400"
+                          : "text-rose-400"
+                      }`}
+                    >
+                      {svc.serviceStatus === "up" ? "Up" : "Down"}
+                    </span>
+                  </div>
+                </td>
+                {svc.stats=="no traffic"?(
+                    <td colSpan={4} className="px-6 py-6 text-center">
+                      <div className="flex items-center justify-center gap-2 text-zinc-500">
+                        <span className="text-sm font-medium tracking-wide">
+                          No traffic yet
+                        </span>
+                        <span className="text-xs text-zinc-600">
+                          (Waiting for requests)
+                        </span>
+                      </div>
+                    </td>
+              ):(
+                <>
                 <td className="px-6 py-4 text-right">
                   <div className="text-zinc-100 font-mono metric-xs text-center font-semibold">{svc.stats.avgLatency}ms</div>
                 </td>
@@ -107,14 +141,16 @@ const ServiceTable = () => {
                 <td className="px-6 py-4 text-center">
                   <div className="flex justify-center">
                     <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all duration-300
-                        ${svc.stats.healthStatus.toLowerCase() === 'healthy' 
+                        ${svc.stats.healthStatus?.toLowerCase() === 'healthy' 
                           ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]' 
                           : 'bg-rose-500/5 border-rose-500/20 text-rose-400 shadow-[0_0_15px_-5px_rgba(244,63,94,0.3)]'}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${svc.stats.healthStatus.toLowerCase() === 'healthy' ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${svc.stats.healthStatus?.toLowerCase() === 'healthy' ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
                       {svc.stats.healthStatus}
                     </span>
                   </div>
                 </td>
+                </>
+                )}
               </tr>
             ))}
           </tbody>

@@ -11,6 +11,7 @@ import {
 import { Activity, RefreshCw } from 'lucide-react'
 import { useAppContext } from "../../../context/GlobalAppContext"
 import { useChartData } from '../../../services/useChartData'
+import NoTraffic from './NoTraffic'
 
 const formatRps = (v) => {
   if (v == null) return '0'
@@ -39,7 +40,7 @@ const RequestChartCard = () => {
   })) : []
 
   return (
-    <div className="group relative w-full h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
+    <div className="group relative md:w-[50%] h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
       
       {/* Refractive Glass Glows */}
       <div className="absolute -top-24 -left-24 w-48 h-48 bg-violet-500/10 blur-[100px] pointer-events-none" />
@@ -72,7 +73,10 @@ const RequestChartCard = () => {
           </div>
         </div>
       </div>
-
+      {chartData.length===0?(
+        <NoTraffic/>
+      ):(
+      <>
       {/* Chart Area */}
       <div className="flex-1 w-full min-h-0 relative z-10">
         <ResponsiveContainer width="100%" height="100%">
@@ -160,6 +164,7 @@ const RequestChartCard = () => {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      </>)}
     </div>
   )
 }

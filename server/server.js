@@ -4,9 +4,8 @@ const cors = require('cors')
 const express = require("express");
 const app = express();
 const timeRangeMiddleware = require("./src/middleware/timeRange");
-require('./src/cron/serviceDataRollupWorker')
-require('./src/cron/routeDataRollupWorker')
-require('./src/cron/chartDataRollupWorker')
+require('./src/cron/cronWorker')
+
 app.use(cors({
   origin: "*",
 }));

@@ -94,7 +94,6 @@ const KpiCard = ({
     }
   }, [value]);
 
-  // ✅ Show skeleton ONLY on first load
   if (loading && !hasData) {
     return (
       <div className={`${base} p-5 animate-pulse`}>

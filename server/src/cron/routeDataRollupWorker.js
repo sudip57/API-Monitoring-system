@@ -1,6 +1,6 @@
 const requestEventModel = require('../models/raw/requestEventModel')
 const routeDataModel = require('../models/routeData')
-async function runAggregation() {
+async function runRouteDataAggregation() {
   const to = new Date();
   const from = new Date(to.getTime() - 60 * 1000); 
   const routeAgg = await requestEventModel.aggregate([
@@ -77,7 +77,7 @@ async function runAggregation() {
         serviceName: "$_id.serviceName",
         route: "$_id.route",
         method: "$_id.method",
-        timestamp: from,
+        timestamp: new Date(),
         requestCount: "$totalRequests",
         totalDuration: "$sumLatency",
         errorCount: 1,
@@ -93,5 +93,4 @@ async function runAggregation() {
     console.log("no traffic")
   }
 }
-setInterval(runAggregation, 60000);
-runAggregation();
+module.exports = runRouteDataAggregation;

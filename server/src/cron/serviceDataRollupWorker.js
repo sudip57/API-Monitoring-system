@@ -1,7 +1,7 @@
 const requestEventModel = require('../models/raw/requestEventModel')
 const serviceDataModel = require('../models/serviceData')
 
-async function runAggregation() {
+async function runServiceDataAggregation() {
   try {
     const to = new Date();
     const from = new Date(to.getTime() - 60 * 1000); 
@@ -68,7 +68,7 @@ async function runAggregation() {
             projectKey:1,
             _id: 0,
             serviceName: "$_id",
-            timestamp: from,
+            timestamp: new Date(),
             requestCount: 1,
             errorCount: 1,
             totalDuration: 1,
@@ -87,5 +87,4 @@ async function runAggregation() {
     console.error("Aggregation error:", err);
   }
 }
-setInterval(runAggregation, 60000);
-runAggregation();
+module.exports=runServiceDataAggregation;

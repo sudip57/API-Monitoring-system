@@ -1,9 +1,17 @@
 const resourceMetricsModel = require("../../models/raw/resourceMetricsModel");
-async function getResourceData(projectKey){
+async function getResourceData(config){
+  const {projectKey,serviceName}=config;
+  const match = {
+      "meta.projectKey": projectKey,
+    };
+    if (serviceName) {
+      match["meta.serviceName"] = serviceName;
+    }
 const latestPerService = await resourceMetricsModel.aggregate([
+    
       {
         $match: {
-          "meta.projectKey": projectKey,
+          ...match,
           timestamp: { $gte: new Date(Date.now() - 2 * 60 * 1000) }
         },
       },

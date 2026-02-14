@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from "react";
 export function useLiveMetrics(props) {
   const [latest, setLatest] = useState(null);
   const [series, setSeries] = useState([]);
-  const { projectkey, servicename } = props;
+  const { projectKey, serviceName } = props;
   const lastTimestampRef = useRef(null);
   
   let url = `https://api-monitoring-system-szih.onrender.com/resourcedata?`;
-  if (projectkey) url += `projectkey=${projectkey}`;
-  if (servicename) url += `${projectkey ? '&' : ''}servicename=${servicename}`;
+  if (projectKey) url += `projectKey=${projectkey}`;
+  if (serviceName) url += `${projectKey ? '&' : ''}servicename=${serviceName}`;
   
   useEffect(() => {
     let alive = true;

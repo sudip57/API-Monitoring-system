@@ -1,10 +1,10 @@
-import { useLiveMetrics } from "../hooks/useLiveMetrics";
+import { useLiveMetrics } from "../../../services/useLiveMetrics";
 import { ResourceMetricCard } from "./components/ResourceMetricCard";
 import { CpuChart } from "./components/CpuChart";
 import { MemoryChart } from "./components/MemoryChart";
 
 export default function ResourceMonitor() {
-  const { latest, series } = useLiveMetrics({ projectkey: "test-project" });
+  const { latest, series } = useLiveMetrics({ projectKey: "test-project" });
   
   if (!latest) {
     return <p className="text-white">Loading...</p>;

@@ -3,7 +3,6 @@ import { useAppContext } from '../context/GlobalAppContext';
 import { useServiceData } from '../services/useServiceData';
 import TimeRangePicker from '../components/ui/TimeRangePicker';
 import { useNavigate, useLocation } from "react-router-dom";
-import { useLiveMetrics } from '../features/monitoring/hooks/useLiveMetrics';
 import { 
   Server, Search, Filter, Activity, 
   ChevronRight, ArrowUpRight, Plus, 
@@ -13,8 +12,7 @@ import {
 
 const ServicePage = () => {
     const { timeRange } = useAppContext();
-    const { data, loading, error } = useServiceData(timeRange.rangeMinutes);
-    const { latest, series } = useLiveMetrics({projectkey:"test-project"});
+    const { data, loading, error } = useServiceData({timeRange:timeRange.rangeMinutes});
     const navigate = useNavigate();
     const handleClick  = (serviceName)=>{
         navigate(`/services/${serviceName}`);

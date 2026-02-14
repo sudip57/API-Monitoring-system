@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 
-export function useServiceData(timeRange) {
+export function useServiceData(config) {
+    const {timeRange,serviceName} = config;
+    console.log("inside useServiceData ",serviceName)
     const [data, setdata] = useState(null);
     const [loading, setloading] = useState(true);
     const [error, seterror] = useState(false);
-    
+    const s = !serviceName?"":`&serviceName=${serviceName}`
+    const params = `timeRange=${timeRange}`+s
     useEffect(() => {
         let cancelled = false;
         
@@ -12,7 +15,7 @@ export function useServiceData(timeRange) {
             try {
                 setloading(true);
                 const res = await fetch(
-                    `https://api-monitoring-system-szih.onrender.com/ranged/metrics/serviceData?timeRange=${timeRange}`
+                    `https://api-monitoring-system-szih.onrender.com/ranged/metrics/serviceData?${params}`
                 );
                 
                 if (!res.ok) {

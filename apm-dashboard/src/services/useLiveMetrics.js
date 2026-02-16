@@ -7,8 +7,8 @@ export function useLiveMetrics(props) {
   const lastTimestampRef = useRef(null);
   
   let url = `https://api-monitoring-system-szih.onrender.com/resourcedata?`;
-  if (projectKey) url += `projectKey=${projectkey}`;
-  if (serviceName) url += `${projectKey ? '&' : ''}servicename=${serviceName}`;
+  if (projectKey) url += `projectKey=${projectKey}`;
+  if (serviceName) url += `${projectKey ? '&' : ''}serviceName=${serviceName}`;
   
   useEffect(() => {
     let alive = true;

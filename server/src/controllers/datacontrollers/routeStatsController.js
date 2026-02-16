@@ -1,6 +1,7 @@
 const routeDataModel = require("../../models/routeData")
 async function getRouteStats(config){
     const {serviceName,from,to} = config;
+    const windowSeconds = (to - from) / 1000;
     const routeAgg = await routeDataModel.aggregate([
         {
             $match: {
@@ -31,6 +32,7 @@ async function getRouteStats(config){
             routeName:r.route,
             methodName:r.method,
             totalRequests : r.totalRequests,
+            throughPut:(r.totalRequests/windowSeconds).toFixed(2),
             avgLatency : Number(avgLatency.toFixed(2)),
             p95Latency : r.p95Latency,
             errorCount : errorCount,

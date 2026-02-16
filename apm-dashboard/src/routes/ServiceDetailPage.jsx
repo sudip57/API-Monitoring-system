@@ -9,16 +9,15 @@ import {
   Zap,
   Box,
   Clock,
-  HardDrive,
+  Hexagon,
   Share2,
   AlertTriangle,
-  ArrowUp,
-  ArrowDown,
-  Globe,
-  Layers,
   RefreshCw,
+  TriangleAlert,
+  Server
 } from "lucide-react";
 import TimeRangePicker from "../components/ui/TimeRangePicker";
+import RouteDetailsSection from "./components/RouteDetailsSection";
 function formatUptime(seconds) {
   const hrs = Math.floor(seconds / 3600);
   const min = Math.floor((seconds % 3600) / 60);
@@ -31,7 +30,8 @@ function findTrendValue(oldVal, newVal) {
   const oldRate = Number(oldVal);
   const newRate = Number(newVal);
   if (!oldRate || isNaN(oldRate) || isNaN(newRate)) return "0.00";
-  const jump = ((newRate - oldRate) / oldRate) * 100;
+  const jump = ((newRate - oldRate) / (oldRate)) * 100;
+  if(jump===null) return 0;
   return (jump > 0 ? "+" : "") + jump.toFixed(2);
 }
 
@@ -48,13 +48,25 @@ const ServiceDetailPage = () => {
   const { serviceName } = useParams();
   const { timeRange } = useAppContext();
   const [serviceData, setserviceData] = useState(null);
-  const { latest, series } = useLiveMetrics({ projectkey: "test-project" });
+  const [resourceData, setresourceData] = useState(null);
+  const { latest, series } = useLiveMetrics({
+    projectKey: "test-project",
+    serviceName,
+  });
+  useEffect(() => {
+    if (latest) {
+      setresourceData(latest);
+    }
+  }, [latest]);
+
+  console.log("resource data---", resourceData);
   const [trend, setTrend] = useState({
     latency: 0,
     errorRate: 0,
     rps: 0,
+    p95Latency:0,
   });
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -71,6 +83,10 @@ const ServiceDetailPage = () => {
               latency: findTrendValue(
                 prev.stats.avgLatency,
                 newData.stats.avgLatency,
+              ),
+              p95latency: findTrendValue(
+                prev.stats.p95Latency,
+                newData.stats.p95Latency,
               ),
               errorRate: findTrendValue(
                 prev.stats.errorRate,
@@ -112,6 +128,7 @@ const ServiceDetailPage = () => {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-[#050508] text-zinc-300 p-6 font-sans">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -120,10 +137,10 @@ const ServiceDetailPage = () => {
             <Box className="text-violet-400" size={32} />
           </div>
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-col sm:flex-row">
               <h1 className=" text-white tracking-tight">{serviceName}</h1>
               <span
-                className={`px-2 py-0.5 rounded text-sm font-bold bg-emerald-500/10 border ${!serviceData.stats?"invisible":"visible"} ${
+                className={`px-2 py-0.5 rounded text-sm font-bold bg-emerald-500/10 border ${serviceData.stats==="no traffic" ? "invisible" : "visible"} ${
                   serviceData.stats.healthStatus?.toLowerCase() === "healthy"
                     ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]"
                     : "bg-rose-500/5 border-rose-500/20 text-rose-400 shadow-[0_0_15px_-5px_rgba(244,63,94,0.3) ]"
@@ -132,7 +149,7 @@ const ServiceDetailPage = () => {
                 {serviceData.stats.healthStatus}
               </span>
               <span
-                className={`px-2 py-0.5 rounded text-sm font-bold uppercase bg-emerald-500/10 border ${!serviceData?"invisible":"visible"} ${
+                className={`px-2 py-0.5 rounded text-sm font-bold uppercase bg-emerald-500/10 border ${!serviceData ? "invisible" : "visible"} ${
                   serviceData.serviceStatus === "up"
                     ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]"
                     : "bg-rose-500/5 border-rose-500/20 text-rose-400 shadow-[0_0_15px_-5px_rgba(244,63,94,0.3) ]"
@@ -141,7 +158,7 @@ const ServiceDetailPage = () => {
                 {serviceData.serviceStatus}
               </span>
             </div>
-            <span className="flex items-center gap-1.5 text-violet-400/80">
+            <span className="flex items-center uppercase font-bold gap-1.5 text-green-400/80">
               <Clock size={14} /> Uptime: {formatUptime(serviceData.upTime)}
             </span>
           </div>
@@ -155,31 +172,33 @@ const ServiceDetailPage = () => {
         {[
           {
             label: "Avg Latency",
-            val: `${!serviceData.stats?"----":serviceData.stats.avgLatency}`,
+            val: `${serviceData.stats==="no traffic" ? 0 : serviceData.stats.avgLatency}`,
             change: `${trend.latency}%`,
             icon: Zap,
             color: "text-amber-400",
+            unit:"ms"
           },
           {
             label: "Throughput",
-            val: `${!serviceData.stats?"----":serviceData.stats.avgThroughPut}`,
+            val: `${serviceData.stats==="no traffic" ? 0 : (serviceData.stats.avgThroughPut>=1000?(serviceData.stats.avgThroughPut/1000).toFixed(2)+"k":serviceData.stats.avgThroughPut)}`,
             change: `${trend.rps}%`,
             icon: Activity,
             color: "text-violet-400",
+            unit:"rps"
           },
           {
             label: "Error Rate",
-            val: `${!serviceData.stats?"----":serviceData.stats.errorRate}`,
+            val: `${serviceData.stats==="no traffic" ? 0 : serviceData.stats.errorRate}`,
             change: `${trend.errorRate}%`,
-            icon: ShieldCheck,
-            color: "text-emerald-400",
-          },
-          {
-            label: "Active Instances",
-            val: "12/12",
-            change: "Stable",
-            icon: HardDrive,
-            color: "text-blue-400",
+            icon: TriangleAlert,
+            color: "text-rose-500",
+          },{
+            label: "P95 Latency",
+            val: `${serviceData.stats==="no traffic" ? 0 : serviceData.stats.p95Latency}`,
+            change: `${trend.p95Latency||0}%`,
+            icon: Zap,
+            color: "text-amber-400",
+            unit:"ms"
           },
         ].map((stat, i) => (
           <div
@@ -198,6 +217,7 @@ const ServiceDetailPage = () => {
             </div>
             <div className="text-2xl font-bold text-white tracking-tight">
               {stat.val}
+              <span>{` ${!stat.unit?"":stat.unit}`}</span>
             </div>
             <div className="text-[11px] text-zinc-500 uppercase tracking-widest font-bold mt-1">
               {stat.label}
@@ -210,28 +230,8 @@ const ServiceDetailPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Columns: Charts & Logs placeholder */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[#0c0c12] border border-white/10 rounded-2xl p-6 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
-            <div className="absolute top-4 left-6 flex items-center gap-2">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                Service Topology
-              </h3>
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-
-            {/* Contextual Placeholder for Traffic Flow Visual */}
-            <div className="text-center space-y-3 opacity-40 group hover:opacity-100 transition-opacity">
-              <div className="p-4 bg-white/[0.02] border border-dashed border-white/10 rounded-full inline-block">
-                <Share2
-                  size={48}
-                  className="text-zinc-600 group-hover:text-violet-500 transition-colors"
-                />
-              </div>
-              <p className="text-sm font-medium">
-                Visualizing Inbound/Outbound Dependencies...
-              </p>
-            </div>
-          </div>
-
+          
+          <RouteDetailsSection serviceName={serviceName}/>
           <div className="bg-[#0c0c12] border border-white/10 rounded-2xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
@@ -279,28 +279,112 @@ const ServiceDetailPage = () => {
         </div>
 
         {/* Right 1 Column: Infrastructure & Metadata */}
-        <div className="space-y-6">
-          <div className="bg-[#0c0c12] border border-white/10 rounded-2xl p-6">
-            <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em] mb-6">
+        {!resourceData?
+        <>
+         <div className="bg-[#0c0c12] border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center gap-4 text-center min-h-[300px]">
+          {/* Icon */}
+          <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center">
+            <Activity className="text-zinc-500" size={26} />
+          </div>
+
+          {/* Title */}
+          <h3 className="text-sm font-semibold text-white">
+            No Resource Data
+          </h3>
+
+          {/* Description */}
+          <p className="text-xs text-zinc-500 max-w-[260px]">
+            We’re not receiving telemetry from this service yet.
+            Metrics will appear once data is ingested.
+          </p>
+        </div>
+        </>:<>
+        <div className="flex flex-col gap-6">
+          <div className="bg-[#0c0c12] border border-white/10 rounded-2xl p-6 flex flex-col gap-5">
+            <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em] mb-3">
               Infrastructure
             </h3>
             <div className="space-y-6">
               <div>
-                <div className="flex justify-between text-xs mb-2">
-                  <span className="text-zinc-400">Memory Allocation</span>
-                  <span className="text-white font-mono">2.4GB / 4.0GB</span>
+                <div className="flex gap-2 items-center">
+                <Server size={15}/>
+                <h5> HOST</h5>
+                </div>
+                
+                <div className="flex justify-between text-xs mb-2 mt-2">
+                  <span className="text-zinc-400">System Memory Allocation</span>
+                  <span className="text-white font-mono">{`${((resourceData?.systemMemory?.totalMB - resourceData?.systemMemory?.freeMB) / 1024).toFixed(1)}GB/${(resourceData?.systemMemory?.totalMB / 1024).toFixed(1)}GB`}</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-violet-500 rounded-full w-[60%]" />
+                  <div
+                    className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${
+                        (((resourceData?.systemMemory?.totalMB -
+                          resourceData?.systemMemory?.freeMB) /
+                          resourceData?.systemMemory?.totalMB) *
+                        100)
+                      }%`,
+                    }}
+                  />
                 </div>
               </div>
               <div>
                 <div className="flex justify-between text-xs mb-2">
-                  <span className="text-zinc-400">CPU Load (Aggregate)</span>
-                  <span className="text-white font-mono">14%</span>
+                  <span className="text-zinc-400">System CPU Load</span>
+                  <span className="text-white font-mono">{`${resourceData?.cpu.systemCpuUsage}%`}</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full w-[14%]" />
+                  <div
+                    className="h-full bg-amber-500 rounded-full"
+                    style={{ width: `${resourceData?.cpu.systemCpuUsage}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="w-full h-px bg-red-700/50 mt-5"></div>
+            <div className="space-y-6">
+              <div>
+                <div className="flex gap-2 items-center">
+                <Hexagon size={15} color="lightgreen"/>
+                <h5>{`${serviceName}`}</h5>
+                </div>
+                <div className="flex justify-between text-xs mb-2 mt-2">
+                  <span className="text-zinc-400">App Memory Usage</span>
+                  <span className="text-white font-mono">
+                  {
+                    `${
+                      resourceData?.memory.rssMB > 1000
+                        ? (resourceData?.memory.rssMB / 1024).toFixed(2) + "GB"
+                        : resourceData?.memory.rssMB.toFixed(1) + "MB"
+                    }`
+                  }
+                </span>
+
+                </div>
+                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-lime-500 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${
+                        (resourceData?.memory.rssMB/
+                          resourceData?.systemMemory.freeMB) *
+                        100
+                      }%`,
+                    }}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-xs mb-2">
+                  <span className="text-zinc-400">App CPU Load</span>
+                  <span className="text-white font-mono">{`${resourceData?.cpu.percent}%`}</span>
+                </div>
+                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-red-400 rounded-full"
+                    style={{ width: `${resourceData?.cpu.percent}%`}}
+                  />
                 </div>
               </div>
             </div>
@@ -346,6 +430,8 @@ const ServiceDetailPage = () => {
             </div>
           </div>
         </div>
+        </>}
+        
       </div>
     </div>
   );

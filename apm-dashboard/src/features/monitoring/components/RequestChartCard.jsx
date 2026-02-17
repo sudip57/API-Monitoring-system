@@ -32,7 +32,7 @@ const RequestChartCard = () => {
   }
 
   const chartData = Array.isArray(data) ? data.map(item => ({
-    timestamp: item.timestamp,
+    timestamp: new Date(item.timestamp).getTime(),
     requestRate: item.avgThroughput,
     requestCount: item.totalRequests,
     avgLatency: item.avgLatency,
@@ -96,7 +96,10 @@ const RequestChartCard = () => {
             
             <XAxis
               dataKey="timestamp"
-              tickFormatter={(ts) => formatTime(ts)}
+              type="number"
+              scale="time"
+              domain={['dataMin', 'dataMax']}
+              tickFormatter={formatTime}
               stroke="rgba(255,255,255,0.3)"
               fontSize={10}
               tickLine={false}

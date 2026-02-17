@@ -1,8 +1,9 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useAppContext } from "../context/GlobalAppContext";
-import { useLiveMetrics } from "../services/useLiveMetrics";
+import { useAppContext } from "../../../context/GlobalAppContext";
+import { useLiveMetrics } from "../../../services/useLiveMetrics";
+import { useServiceData } from "../../../services/useServiceData";
 import {
   Activity,
   ShieldCheck,
@@ -16,8 +17,8 @@ import {
   TriangleAlert,
   Server
 } from "lucide-react";
-import TimeRangePicker from "../components/ui/TimeRangePicker";
-import RouteDetailsSection from "./components/RouteDetailsSection";
+import TimeRangePicker from "../../../components/ui/TimeRangePicker";
+import RouteDetailsSection from "./RouteDetailsSection";
 function formatUptime(seconds) {
   const hrs = Math.floor(seconds / 3600);
   const min = Math.floor((seconds % 3600) / 60);
@@ -47,7 +48,10 @@ const SERVICE_META = {
 const ServiceDetailPage = () => {
   const { serviceName } = useParams();
   const { timeRange } = useAppContext();
-  const [serviceData, setserviceData] = useState(null);
+  const { data, loading, error } = useServiceData({
+      timeRange: timeRange.rangeMinutes,serviceName:serviceName
+    });
+  const serviceData=data?.servicesData[0];
   const [resourceData, setresourceData] = useState(null);
   const { latest, series } = useLiveMetrics({
     projectKey: "test-project",
@@ -67,56 +71,8 @@ const ServiceDetailPage = () => {
     p95Latency:0,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(
-          `https://api-monitoring-system-szih.onrender.com/ranged/metrics/serviceData?timeRange=2&serviceName=${serviceName}`,
-        );
 
-        const data = await res.json();
-        const newData = data.servicesData[0];
 
-        setserviceData((prev) => {
-          if (prev) {
-            setTrend({
-              latency: findTrendValue(
-                prev.stats.avgLatency,
-                newData.stats.avgLatency,
-              ),
-              p95latency: findTrendValue(
-                prev.stats.p95Latency,
-                newData.stats.p95Latency,
-              ),
-              errorRate: findTrendValue(
-                prev.stats.errorRate,
-                newData.stats.errorRate,
-              ),
-              rps: findTrendValue(
-                prev.stats.avgThroughPut,
-                newData.stats.avgThroughPut,
-              ),
-            });
-          }
-
-          return newData;
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchData();
-    const id = setInterval(fetchData, 60000);
-    return () => clearInterval(id);
-  }, [serviceName]);
-
-  const handleRefresh = (minutes) => {
-    const now = Date.now();
-    const from = now - minutes * 60 * 1000;
-    timeRange.setRangeMinutes(minutes);
-    timeRange.setRange({ from, to: now });
-  };
   console.log("-------", serviceData);
   if (!serviceData) {
     return (

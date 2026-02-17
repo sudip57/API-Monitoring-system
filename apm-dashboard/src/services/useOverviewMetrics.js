@@ -34,7 +34,10 @@ export function useOverviewMetrics(timeRange){
       }
       
       fetchMetrics();
-      
+      if(timeRange>=1 && timeRange<=5){
+            const id = setInterval(fetchMetrics, 60000);
+            return () => clearInterval(id);
+        }
       return () => {
         cancelled = true;
       }

@@ -27,8 +27,8 @@ const result = await serviceDataModel.aggregate([
         projectKey:"$_id",
         totalRequests: 1,
         totalErrors: 1,
-        timestamp: to,
-      avgLatency: {
+        timestamp: new Date(),
+        avgLatency: {
         $cond: [
           { $gt: ["$totalRequests", 0] },
           {

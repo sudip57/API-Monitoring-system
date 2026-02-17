@@ -1,13 +1,13 @@
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ServicePage from "./routes/ServicePage";
-import RoutesPage from './routes/RoutesPage';
-import ErrorAnalysisPage from './routes/ErrorAnalysisPage';
-import LogExplorerPage from './routes/LogExplorerPage';
+import ServicePage from "./routes/servicepage/ServicePage";
+import RoutesPage from './routes/routepage/RoutesPage';
+import ErrorAnalysisPage from './routes/errorpage/ErrorAnalysisPage';
+import LogExplorerPage from './routes/logpage/LogExplorerPage';
 import './index.css'
 import App from './App'
 import DashboardPage from './routes/DashboardPage';
-import ServiceDetailPage from './routes/ServiceDetailPage';
+import ServiceDetailPage from './routes/servicepage/components/ServiceDetailPage';
 import AlertPage from './routes/AlertPage';
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -16,6 +16,7 @@ createRoot(document.getElementById('root')).render(
         <Route index element={<DashboardPage/>} />
         <Route path="/services">
           <Route index element={<ServicePage />} />
+          <Route path=":serviceName/routes" element={<RoutesPage/>} />
           <Route path=":serviceName" element={<ServiceDetailPage/>} />
           </Route>
           <Route path="routes" element={<RoutesPage/>} />

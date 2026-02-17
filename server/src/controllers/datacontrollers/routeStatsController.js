@@ -18,7 +18,10 @@ async function getRouteStats(config){
             totalRequests: { $sum: "$requestCount" },
             totalDuration: { $sum: "$totalDuration" },
             errorCount: {$sum:"$errorCount"},
-            p95Latency:{ $max:"$p95Latency" }
+            p95Latency:{ $max:"$p95Latency" },
+            statusCount:{
+                    $mergeObjects:"$statusCount"
+                }
             }
         }
     ])
@@ -28,6 +31,14 @@ async function getRouteStats(config){
             ? Number(((errorCount  / r.totalRequests) * 100).toFixed(2))
             : 0;
         const avgLatency = r.totalDuration/r.totalRequests;
+        const statusInfo = r.statusCount || {};
+        const successCount = (statusInfo["200"]||0)+(statusInfo["201"]||0)+(statusInfo["204"]||0);
+        const clientErrors = Object.entries(statusInfo)
+            .filter(([k])=>k.startsWith("4"))
+            .reduce((a,[,v])=>a+v,0);
+        const serverErrors = Object.entries(statusInfo)
+            .filter(([k])=>k.startsWith("5"))
+            .reduce((a,[,v])=>a+v,0);    
         return {
             routeName:r.route,
             methodName:r.method,
@@ -37,6 +48,10 @@ async function getRouteStats(config){
             p95Latency : r.p95Latency,
             errorCount : errorCount,
             errorRate,
+            successCount,
+            clientErrors,
+            serverErrors,
+            statusInfo:statusInfo
         }
     })
     return routeData;

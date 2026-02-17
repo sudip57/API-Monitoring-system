@@ -4,6 +4,7 @@ import ErrorChartCard from '../features/monitoring/components/ErrorChartCard'
 import LatencyChartCard from '../features/monitoring/components/LatencyChartCard'
 import ServiceTable from '../features/monitoring/servicemonitor/ServiceTable'
 import ResourceMonitor from '../features/monitoring/resourcemonitor/ResourceMonitor'
+import TimeRangePicker from '../components/ui/TimeRangePicker'
 
 const DashboardPage = () => {
   return (
@@ -14,9 +15,7 @@ const DashboardPage = () => {
         <div>
           <h1>System Overview</h1>
         </div>
-        <div className="text-sm opacity-70">
-          Environment: Production
-        </div>
+        <TimeRangePicker/>
       </div>
 
       {/* ===== KPI Section ===== */}

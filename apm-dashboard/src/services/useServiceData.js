@@ -38,7 +38,10 @@ export function useServiceData(config) {
         }
         
         fetchData();
-        
+        if(timeRange>=1 && timeRange<=5){
+            const id = setInterval(fetchData, 60000);
+            return () => clearInterval(id);
+        }
         return () => {
             cancelled = true;
         };

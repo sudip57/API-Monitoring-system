@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-export function useRouteData(timeRange, serviceName = null) {
+export function useRouteData(config) {
     const [data, setdata] = useState(null);
     const [loading, setloading] = useState(true);
     const [error, seterror] = useState(false);
-    
+    const {timeRange,serviceName} = config;
     useEffect(() => {
         let cancelled = false;
         
@@ -39,7 +39,10 @@ export function useRouteData(timeRange, serviceName = null) {
         }
         
         fetchData();
-        
+        if(timeRange>=1 && timeRange<=5){
+            const id = setInterval(fetchData, 60000);
+            return () => clearInterval(id);
+        }
         return () => {
             cancelled = true;
         };

@@ -10,6 +10,7 @@ const routeDataSchema =  new mongoose.Schema({
     errorCount: Number,
     totalDuration: Number,
     p95Latency:Number,
+    statusCount:Object,
 });
 routeDataSchema.index({ serviceName: 1, timestamp: 1 ,projectKey:1 });
 const routeDataModel = mainDB.model(

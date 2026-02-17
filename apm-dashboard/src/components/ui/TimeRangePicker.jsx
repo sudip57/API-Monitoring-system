@@ -9,10 +9,7 @@ const TimeRangePicker = () => {
     const {timeRange} = useAppContext()
     const active = timeRange.rangeMinutes || 15;
     const handleRefresh = (minutes) => {
-    const now = Date.now();
-    const from = now - minutes * 60 * 1000;
     timeRange.setRangeMinutes(minutes);
-    timeRange.setRange({ from, to: now });
     };
   return (
     <div className="flex items-center gap-2">
@@ -41,10 +38,10 @@ const TimeRangePicker = () => {
 
       {/* Refresh Button */}
       <button
-        onClick={() => handleRefresh(active)}
+        onClick={() => handleRefresh(1)}
         className="p-2 rounded-lg bg-white/[0.03] border border-white/10 text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors duration-200 cursor-pointer"
       >
-        <RefreshCw size={14} />
+        Live
       </button>
     </div>
   );

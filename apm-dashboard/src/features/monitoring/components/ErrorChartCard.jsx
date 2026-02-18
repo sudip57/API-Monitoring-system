@@ -42,10 +42,10 @@ const ErrorChartCard = () => {
   }
 
   const chartData = Array.isArray(data) ? data.map(item => ({
-    timestamp: item.timestamp,
+    timestamp: new Date(item.timestamp).getTime(),
     errorRate: item.errorRate,
     errorCount: item.totalErrors
-  })) : []
+  })).sort((a, b) => a.timestamp - b.timestamp) : []
 
   return (
     <div className="group relative w-full h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
@@ -88,8 +88,11 @@ const ErrorChartCard = () => {
             <CartesianGrid stroke="rgba(255,255,255,0.03)" vertical={false} />
             
             <XAxis
-              dataKey="timestamp"
-              tickFormatter={(ts) => formatTime(ts)}
+               dataKey="timestamp"
+              type="number"
+              scale="time"
+              domain={['dataMin', 'dataMax']}
+              tickFormatter={formatTime}
               stroke="rgba(255,255,255,0.3)"
               fontSize={10}
               tickLine={false}

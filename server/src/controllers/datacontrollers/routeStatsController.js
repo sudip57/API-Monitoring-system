@@ -1,18 +1,27 @@
 const routeDataModel = require("../../models/routeData")
 async function getRouteStats(config){
-    const {serviceName,from,to} = config;
+    const {serviceName,from,to,routeName} = config;
     const windowSeconds = (to - from) / 1000;
+    const match = {
+      "projectKey": "test-project"
+    };
+    if (serviceName) {
+        match["serviceName"] = serviceName;
+    }
+    if(routeName){
+        match["routeName"] = routeName;
+    }
     const routeAgg = await routeDataModel.aggregate([
         {
-            $match: {
-            "projectKey": "test-project",
-            "serviceName": serviceName,
-            timestamp: { $gte: from, $lte: to }
-            }
+            $match:match,
         },
         {
             $group:{
-            _id: "$serviceName",
+            _id: {
+            service: "$serviceName",
+            route: "$route",
+            method: "$method"
+            },
             route:{$first:"$route"},
             method:{$first:"$method"},
             totalRequests: { $sum: "$requestCount" },

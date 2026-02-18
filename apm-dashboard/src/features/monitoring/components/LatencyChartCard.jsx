@@ -2,6 +2,7 @@ import React from 'react'
 import {
   ComposedChart,
   Bar,
+  Area,
   Line,
   XAxis,
   YAxis,
@@ -44,10 +45,10 @@ const LatencyChartCard = () => {
   }
 
   const chartData = Array.isArray(data) ? data.map(item => ({
-    timestamp: item.timestamp,
+    timestamp: new Date(item.timestamp).getTime(),
     avgLatency: item.avgLatency,
     p95Latency: item.p95Latency
-  })) : []
+  })).sort((a, b) => a.timestamp - b.timestamp) : []
 
   return (
     <div className="group relative w-full h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
@@ -91,12 +92,16 @@ const LatencyChartCard = () => {
             
             <XAxis
               dataKey="timestamp"
-              tickFormatter={(ts) => formatTime(ts)}
+              type="number"
+              scale="time"
+              domain={['dataMin', 'dataMax']}
+              tickFormatter={formatTime}
               stroke="rgba(255,255,255,0.3)"
               fontSize={10}
               tickLine={false}
               axisLine={false}
               minTickGap={40}
+              interval="preserveStartEnd"
             />
 
             <YAxis
@@ -128,11 +133,11 @@ const LatencyChartCard = () => {
             />
 
             {/* P95 Context - Subtle Bars */}
-            <Bar
+            <Area
+              type="monotone"
               dataKey="p95Latency"
-              fill="rgba(99, 102, 241, 0.40)"
-              radius={[2, 2, 0, 0]}
-              barSize={12}
+              fill="rgba(99,102,241,0.70)"
+              stroke="none"
               isAnimationActive={false}
             />
 

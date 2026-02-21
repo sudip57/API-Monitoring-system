@@ -30,11 +30,12 @@ function formatUptime(seconds) {
 function findTrendValue(oldVal, newVal) {
   const oldRate = Number(oldVal);
   const newRate = Number(newVal);
-  if (!oldRate || isNaN(oldRate) || isNaN(newRate)) return "0.00";
-  const jump = ((newRate - oldRate) / (oldRate)) * 100;
-  if(jump===null) return 0;
+  if (isNaN(oldRate) || isNaN(newRate)) return "0.00";
+  if (oldRate === 0) return newRate === 0 ? "0.00" : "+100.00";
+  const jump = ((newRate - oldRate) / oldRate) * 100;
   return (jump > 0 ? "+" : "") + jump.toFixed(2);
 }
+
 
 const SERVICE_META = {
   name: "auth-gateway-production",
@@ -48,6 +49,7 @@ const SERVICE_META = {
 const ServiceDetailPage = () => {
   const { serviceName } = useParams();
   const { timeRange } = useAppContext();
+  const [prevMetrics, setPrevMetrics] = useState(null);
   const { data, loading, error } = useServiceData({
       timeRange: timeRange.rangeMinutes,serviceName:serviceName
     });
@@ -70,9 +72,19 @@ const ServiceDetailPage = () => {
     rps: 0,
     p95Latency:0,
   });
-
-
-
+console.log(serviceData)
+useEffect(() => {
+  setTrend(prev => {
+    if (!prevMetrics?.stats) return prev;
+    return {
+      latency: findTrendValue(prevMetrics?.stats.avgLatency, serviceData?.stats.avgLatency),
+      errorRate: findTrendValue(prevMetrics?.stats.errorRate, serviceData?.stats.errorRate),
+      rps: findTrendValue(prevMetrics?.stats.avgThroughPut, serviceData?.stats.avgThroughPut),
+      p95Latency: findTrendValue(prevMetrics?.stats.p95Latency, serviceData?.stats.p95Latency),
+    };
+  });
+  setPrevMetrics(serviceData)
+}, [serviceData]);
   console.log("-------", serviceData);
   if (!serviceData) {
     return (

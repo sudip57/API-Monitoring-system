@@ -16,7 +16,7 @@ const ServiceCard = ({ svc }) => {
   const navigate = useNavigate();
 
   const getStatusColor = () => {
-    const health = svc.stats.healthStatus.toLowerCase();
+    const health = svc.stats.healthStatus?.toLowerCase();
     if (health === "healthy") return { primary: "emerald", hex: "#10b981" };
     if (health === "degraded") return { primary: "amber", hex: "#f59e0b" };
     return { primary: "rose", hex: "#f43f5e" };

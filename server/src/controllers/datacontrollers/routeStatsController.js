@@ -40,7 +40,11 @@ async function getRouteStats(config){
             ? Number(((errorCount  / r.totalRequests) * 100).toFixed(2))
             : 0;
         const avgLatency = r.totalDuration/r.totalRequests;
-        const statusInfo = r.statusCount || {};
+        const rawStatus = r.statusCount || {};
+        const statusInfo = Object.entries(rawStatus).map(([status, count]) => ({
+            status,
+            count
+        }));
         const successCount = (statusInfo["200"]||0)+(statusInfo["201"]||0)+(statusInfo["204"]||0);
         const clientErrors = Object.entries(statusInfo)
             .filter(([k])=>k.startsWith("4"))

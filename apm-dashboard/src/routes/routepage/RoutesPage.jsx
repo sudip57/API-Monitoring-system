@@ -5,6 +5,8 @@ import {
 } from "lucide-react";
 import { useSearchParams,useParams } from "react-router-dom";
 import TimeRangePicker from "../../components/ui/TimeRangePicker";
+import { useRouteData } from "../../services/useRouteData";
+import { useAppContext } from "../../context/GlobalAppContext";
 // Dummy Data for Charts/Details
 const DUMMY_HISTORY = [
   { time: "12:00", p95: 120, rps: 45, errors: 0 },
@@ -16,13 +18,13 @@ const DUMMY_HISTORY = [
 
 const RoutesPage = () => {
   const [searchParams] = useSearchParams();
-  // const { timeRange } = useAppContext();
-  // const { data, loading, error } = useRouteData({
-  //       timeRange: timeRange.rangeMinutes,serviceName:serviceName
-  //     });
-  // const routeData=data?.routeData;
+   const { timeRange } = useAppContext();
   const routeName = searchParams.get("routeName");
   const { serviceName } = useParams();
+  const {data}=useRouteData({timeRange:timeRange.rangeMinutes,serviceName,routeName})
+  const routeData = data?.routeData[0]
+  console.log("routedetaildata---",routeData.statusInfo)
+  
   return (
     <div className="min-h-screen bg-[#050507] text-zinc-300 p-8 font-sans">
       {/* 1. Navigation & Header */}
@@ -41,10 +43,11 @@ const RoutesPage = () => {
       {/* 2. Key Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Avg Latency", val: "142ms", icon: <Clock size={16} className="text-blue-400"/>, trend: "-12%" },
-          { label: "P95 Latency", val: "420ms", icon: <Zap size={16} className="text-amber-400"/>, trend: "+5%" },
-          { label: "Throughput", val: "84.2 rps", icon: <Activity size={16} className="text-emerald-400"/>, trend: "+18%" },
-          { label: "Error Rate", val: "0.42%", icon: <ShieldAlert size={16} className="text-rose-500"/>, trend: "-2%" },
+          { label: "Avg Latency", val: `${routeData?.avgLatency}`, icon: <Clock size={16} className="text-blue-400"/>, trend: "-12%" },
+          { label: "P95 Latency", val: `${routeData?.p95Latency}`, icon: <Zap size={16} className="text-amber-400"/>, trend: "+5%" },
+          { label: "Throughput", val: `${routeData?.throughPut}`, icon: <Activity size={16} className="text-emerald-400"/>, trend: "+18%" },
+          { label: "Error Rate", val: `${routeData?.errorRate}`, icon: <ShieldAlert size={16} className="text-rose-500"/>, trend: "-2%" },
+          { label: "Total Requests", val: `${routeData?.totalRequests}`, icon: <ShieldAlert size={16} className="text-rose-500"/>, trend: "-2%" },
         ].map((stat, i) => (
           <div key={i} className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl shadow-sm">
             <div className="flex justify-between items-start mb-3">
@@ -85,18 +88,11 @@ const RoutesPage = () => {
         <div className="col-span-12 lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
           <h3 className="text-sm font-bold text-white mb-6">Status Distribution</h3>
           <div className="space-y-4">
-            {[
-              { code: "200 OK", count: "14.2k", color: "bg-emerald-500", pct: 94 },
-              { code: "404 Not Found", count: "420", color: "bg-amber-500", pct: 4 },
-              { code: "500 Error", count: "82", color: "bg-rose-500", pct: 2 },
-            ].map((s) => (
-              <div key={s.code}>
+            {routeData.statusInfo.map((s) => (
+              <div key={s}>
                 <div className="flex justify-between text-[11px] mb-1.5 font-mono">
-                  <span className="text-zinc-300">{s.code}</span>
-                  <span className="text-zinc-500">{s.count} ({s.pct}%)</span>
-                </div>
-                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                  <div className={`h-full ${s.color}`} style={{ width: `${s.pct}%` }} />
+                  <span className="text-zinc-300">{s.status}</span>
+                  <span className="text-zinc-500">{s.count}</span>
                 </div>
               </div>
             ))}

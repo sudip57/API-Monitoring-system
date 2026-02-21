@@ -4,7 +4,7 @@ export function useRouteData(config) {
     const [data, setdata] = useState(null);
     const [loading, setloading] = useState(true);
     const [error, seterror] = useState(false);
-    const {timeRange,serviceName} = config;
+    const {timeRange,serviceName,routeName} = config;
     useEffect(() => {
         let cancelled = false;
         
@@ -16,7 +16,9 @@ export function useRouteData(config) {
                 if (serviceName) {
                     url += `&serviceName=${serviceName}`;
                 }
-                
+                if (routeName) {
+                    url += `&routeName=${routeName}`;
+                }
                 const res = await fetch(url);
                 
                 if (!res.ok) {

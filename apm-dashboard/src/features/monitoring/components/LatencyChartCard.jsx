@@ -11,8 +11,6 @@ import {
   CartesianGrid
 } from 'recharts'
 import { Clock, Zap } from 'lucide-react'
-import { useAppContext } from "../../../context/GlobalAppContext"
-import { useChartData } from '../../../services/useChartData'
 import NoTraffic from './NoTraffic'
 
 const formatLatency = (v) => {
@@ -26,9 +24,8 @@ const formatTime = (ts) => {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const LatencyChartCard = () => {
-  const { timeRange } = useAppContext()
-  const { data, loading, error } = useChartData(timeRange.rangeMinutes)
+const LatencyChartCard = (props) => {
+  const { data, loading, error } = props
 
    if (loading && !data) {
     return (

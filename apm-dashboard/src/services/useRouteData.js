@@ -50,5 +50,5 @@ export function useRouteData(config) {
         };
     }, [timeRange, serviceName]);
     
-    return { data, loading, error };
+    return {data, loading, error };
 }

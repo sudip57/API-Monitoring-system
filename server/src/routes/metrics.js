@@ -38,7 +38,8 @@ router.get("/chartData",async (req,res)=>{
 router.get("/chartData/route",async (req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
-    const chartData = await getRouteChartData(from,to);
+    const {routeName,serviceName} = req.query;
+    const chartData = await getRouteChartData({from,to,routeName,serviceName});
     res.send({
         chartData
     });
@@ -46,7 +47,8 @@ router.get("/chartData/route",async (req,res)=>{
 router.get("/chartData/service",async (req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
-    const chartData = await getServiceChartData(from,to);
+    const {serviceName} = req.query;
+    const chartData = await getServiceChartData({from,to,serviceName});
     res.send({
         chartData
     });

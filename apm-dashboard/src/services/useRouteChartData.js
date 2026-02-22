@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-export function useChartData(timeRange) {
+export function useRouteChartData(config) {
+    const {timeRange,serviceName,routeName} = config;
     const [chartdata, setchartdata] = useState(null);
     const [chartloading, setchartloading] = useState(true);
     const [charterror, setcharterror] = useState(false);
@@ -12,7 +13,7 @@ export function useChartData(timeRange) {
                 setchartloading(true);
                 const range = isLive ? 5 : timeRange;
                 const res = await fetch(
-                    `https://api-monitoring-system-szih.onrender.com/ranged/metrics/chartData?timeRange=${range}`
+                    `https://api-monitoring-system-szih.onrender.com/ranged/metrics/chartData/route?timeRange=${range}&serviceName=${serviceName}&routeName=${routeName}`
                 );
                 
                 if (!res.ok) {

@@ -9,7 +9,6 @@ const RouteDetailsSection = ({ serviceName }) => {
       timeRange: timeRange.rangeMinutes,serviceName:serviceName
     });
   const routeData=data?.routeData;
-  console.log("routedata-----",data)
   const getMethodColor = (method) => {
     const colors = {
       GET: "text-emerald-400 bg-emerald-400/10 border-emerald-500/20",

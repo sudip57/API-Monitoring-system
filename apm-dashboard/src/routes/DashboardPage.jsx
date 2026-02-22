@@ -5,8 +5,11 @@ import LatencyChartCard from '../features/monitoring/components/LatencyChartCard
 import ServiceTable from '../features/monitoring/servicemonitor/ServiceTable'
 import ResourceMonitor from '../features/monitoring/resourcemonitor/ResourceMonitor'
 import TimeRangePicker from '../components/ui/TimeRangePicker'
-
+import { useAppContext } from '../context/GlobalAppContext'
+import { useChartData } from '../services/useChartData'
 const DashboardPage = () => {
+  const {timeRange} = useAppContext();
+  const { chartdata, chartloading, charterror } = useChartData(timeRange.rangeMinutes)
   return (
     <div className='flex flex-col gap-[30px] p-4'>
 
@@ -40,7 +43,7 @@ const DashboardPage = () => {
 
         <div className='grid md:grid-cols-2 gap-4'>
           <ErrorChartCard/>
-          <LatencyChartCard/>
+          <LatencyChartCard data={chartdata} error={charterror} loading={chartloading}/>
         </div>
       </div>
 

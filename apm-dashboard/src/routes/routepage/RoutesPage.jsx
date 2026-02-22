@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LatencyChartCard from '../../features/monitoring/components/LatencyChartCard'
 import { 
   ArrowLeft, Clock, Zap, ShieldAlert, 
   BarChart3, Activity, Globe, Monitor 
@@ -7,6 +8,7 @@ import { useSearchParams,useParams } from "react-router-dom";
 import TimeRangePicker from "../../components/ui/TimeRangePicker";
 import { useRouteData } from "../../services/useRouteData";
 import { useAppContext } from "../../context/GlobalAppContext";
+import { useRouteChartData } from "../../services/useRouteChartData";
 // Dummy Data for Charts/Details
 const DUMMY_HISTORY = [
   { time: "12:00", p95: 120, rps: 45, errors: 0 },
@@ -17,11 +19,12 @@ const DUMMY_HISTORY = [
 ];
 
 const RoutesPage = () => {
+  const {timeRange} = useAppContext();
   const [searchParams] = useSearchParams();
-   const { timeRange } = useAppContext();
   const routeName = searchParams.get("routeName");
   const { serviceName } = useParams();
-  const {data}=useRouteData({timeRange:timeRange.rangeMinutes,serviceName,routeName})
+  const {data,error,loading}=useRouteData({timeRange:timeRange.rangeMinutes,serviceName,routeName})
+  const {chartdata,charterror,chartloading}=useRouteChartData({timeRange:timeRange.rangeMinutes,serviceName,routeName})
   const routeData = data?.routeData[0]
   return (
     <div className="min-h-screen bg-[#050507] text-zinc-300 p-8 font-sans">
@@ -59,7 +62,7 @@ const RoutesPage = () => {
           </div>
         ))}
       </div>
-
+      <LatencyChartCard data={chartdata} error={charterror} loading={chartloading}/>
       {/* 3. Main Charts Area */}
       <div className="grid grid-cols-12 gap-6 mb-8">
         {/* Latency Over Time (Placeholder for Chart.js/Recharts) */}

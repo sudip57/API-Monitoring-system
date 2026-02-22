@@ -9,8 +9,6 @@ import {
   CartesianGrid
 } from 'recharts'
 import { Activity, RefreshCw } from 'lucide-react'
-import { useAppContext } from "../../../context/GlobalAppContext"
-import { useChartData } from '../../../services/useChartData'
 import NoTraffic from './NoTraffic'
 
 const formatRps = (v) => {
@@ -23,9 +21,8 @@ const formatTime = (ts) => {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const RequestChartCard = () => {
-  const { timeRange } = useAppContext()
-  const { data, loading, error } = useChartData(timeRange.rangeMinutes)
+const RequestChartCard = (props) => {
+   const { data, loading, error } = props
   if (loading && !data) {
     return <div className="h-[320px] w-full rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse" />
   }
@@ -35,7 +32,7 @@ const RequestChartCard = () => {
     requestCount: item.totalRequests,
   })).sort((a, b) => a.timestamp - b.timestamp) : []
   return (
-    <div className="group relative md:w-[50%] h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
+    <div className="group relative w-full h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
       
       {/* Refractive Glass Glows */}
       <div className="absolute -top-24 -left-24 w-48 h-48 bg-violet-500/10 blur-[100px] pointer-events-none" />

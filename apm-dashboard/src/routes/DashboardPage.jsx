@@ -32,7 +32,7 @@ const DashboardPage = () => {
         <h2 className="mb-2">Traffic & Services</h2>
 
         <div className="flex flex-col md:flex-row gap-3 w-full">
-          <RequestChartCard/>
+          <RequestChartCard data={chartdata} error={charterror} loading={chartloading}/>
           <ServiceTable/>
         </div>
       </div>
@@ -42,7 +42,7 @@ const DashboardPage = () => {
         <h2 className="mb-2">Performance Insights</h2>
 
         <div className='grid md:grid-cols-2 gap-4'>
-          <ErrorChartCard/>
+          <ErrorChartCard data={chartdata} error={charterror} loading={chartloading}/>
           <LatencyChartCard data={chartdata} error={charterror} loading={chartloading}/>
         </div>
       </div>

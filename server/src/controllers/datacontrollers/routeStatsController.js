@@ -3,7 +3,8 @@ async function getRouteStats(config){
     const {serviceName,from,to,routeName} = config;
     const windowSeconds = (to - from) / 1000;
     const match = {
-      "projectKey": "test-project"
+        "projectKey": "test-project",
+        timestamp:{ $gte: from, $lte: to }
     };
     if (serviceName) {
         match["serviceName"] = serviceName;
@@ -56,7 +57,7 @@ async function getRouteStats(config){
             routeName:r.route,
             methodName:r.method,
             totalRequests : r.totalRequests,
-            throughPut:(r.totalRequests/windowSeconds).toFixed(2),
+            avgThroughPut:(r.totalRequests/windowSeconds).toFixed(2),
             avgLatency : Number(avgLatency.toFixed(2)),
             p95Latency : r.p95Latency,
             errorCount : errorCount,

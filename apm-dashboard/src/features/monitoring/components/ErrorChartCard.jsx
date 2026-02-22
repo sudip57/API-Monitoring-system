@@ -9,8 +9,6 @@ import {
   CartesianGrid
 } from 'recharts'
 import { AlertCircle, TrendingUp } from 'lucide-react'
-import { useAppContext } from "../../../context/GlobalAppContext"
-import { useChartData } from '../../../services/useChartData'
 import NoTraffic from './NoTraffic'
 
 const formatTime = (ts) => {
@@ -23,9 +21,8 @@ const formatErrorRate = (v) => {
   return `${v < 1 ? v.toFixed(2) : Math.round(v)}%`
 }
 
-const ErrorChartCard = () => {
-  const { timeRange } = useAppContext()
-  const { data, loading, error } = useChartData(timeRange.rangeMinutes)
+const ErrorChartCard = (props) => {
+   const { data, loading, error } = props
 
    if (loading && !data) {
     return (

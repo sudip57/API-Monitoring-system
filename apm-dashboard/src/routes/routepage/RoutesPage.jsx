@@ -9,6 +9,8 @@ import TimeRangePicker from "../../components/ui/TimeRangePicker";
 import { useRouteData } from "../../services/useRouteData";
 import { useAppContext } from "../../context/GlobalAppContext";
 import { useRouteChartData } from "../../services/useRouteChartData";
+import RequestChartCard from "../../features/monitoring/components/RequestChartCard";
+import ErrorChartCard from "../../features/monitoring/components/ErrorChartCard";
 // Dummy Data for Charts/Details
 const DUMMY_HISTORY = [
   { time: "12:00", p95: 120, rps: 45, errors: 0 },
@@ -46,7 +48,7 @@ const RoutesPage = () => {
         {[
           { label: "Avg Latency", val: `${routeData?.avgLatency}`,unit:"ms", icon: <Clock size={16} className="text-blue-400"/>, trend: "-12%" },
           { label: "P95 Latency", val: `${routeData?.p95Latency}`,unit:"ms", icon: <Zap size={16} className="text-amber-400"/>, trend: "+5%" },
-          { label: "Throughput", val: `${routeData?.throughPut}`,unit:"rps", icon: <Activity size={16} className="text-emerald-400"/>, trend: "+18%" },
+          { label: "Throughput", val: `${routeData?.avgThroughPut}`,unit:"rps", icon: <Activity size={16} className="text-emerald-400"/>, trend: "+18%" },
           { label: "Error Rate", val: `${routeData?.errorRate}`,icon: <ShieldAlert size={16} className="text-rose-500"/>, trend: "-2%" },
           { label: "Total Requests", val: `${routeData?.totalRequests}`, icon: <ShieldAlert size={16} className="text-rose-500"/>, trend: "-2%" },
         ].map((stat, i) => (
@@ -62,7 +64,11 @@ const RoutesPage = () => {
           </div>
         ))}
       </div>
+      <div className="flex flex-col gap-3">
       <LatencyChartCard data={chartdata} error={charterror} loading={chartloading}/>
+      <RequestChartCard data={chartdata} error={charterror} loading={chartloading}/>
+      <ErrorChartCard data={chartdata} error={charterror} loading={chartloading}/>
+      </div>
       {/* 3. Main Charts Area */}
       <div className="grid grid-cols-12 gap-6 mb-8">
         {/* Latency Over Time (Placeholder for Chart.js/Recharts) */}

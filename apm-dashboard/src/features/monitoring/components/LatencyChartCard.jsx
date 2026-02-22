@@ -12,7 +12,6 @@ import {
 } from 'recharts'
 import { Clock, Zap } from 'lucide-react'
 import NoTraffic from './NoTraffic'
-
 const formatLatency = (v) => {
   if (v == null) return '–'
   if (v < 1000) return `${Math.round(v)}ms`
@@ -26,7 +25,6 @@ const formatTime = (ts) => {
 
 const LatencyChartCard = (props) => {
   const { data, loading, error } = props
-
    if (loading && !data) {
     return (
       <div className="h-[320px] w-full rounded-2xl bg-white/[0.03] border border-white/10 animate-pulse" />
@@ -46,7 +44,6 @@ const LatencyChartCard = (props) => {
     avgLatency: item.avgLatency,
     p95Latency: item.p95Latency
   })).sort((a, b) => a.timestamp - b.timestamp) : []
-
   return (
     <div className="group relative w-full h-[320px] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl p-5 flex flex-col transition-all hover:border-white/20 overflow-hidden">
       
@@ -86,7 +83,6 @@ const LatencyChartCard = (props) => {
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={chartData || []} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
             <CartesianGrid stroke="rgba(255,255,255,0.03)" vertical={false} />
-            
             <XAxis
               dataKey="timestamp"
               type="number"
@@ -97,8 +93,8 @@ const LatencyChartCard = (props) => {
               fontSize={10}
               tickLine={false}
               axisLine={false}
-              minTickGap={40}
-              interval="preserveStartEnd"
+              minTickGap={60}
+              tickCount={6}
             />
 
             <YAxis

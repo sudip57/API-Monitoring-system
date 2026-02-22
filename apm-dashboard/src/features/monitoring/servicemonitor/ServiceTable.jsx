@@ -30,7 +30,7 @@ const ServiceTable = () => {
   }
 
   return (
-    <div className="group relative md:w-[60%] rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl overflow-hidden transition-all hover:border-white/20 ">
+    <div className="group relative w-full rounded-2xl bg-[#0c0c12] border border-white/10 shadow-2xl overflow-hidden transition-all hover:border-white/20 ">
       
       {/* Refractive Glass Light Effect */}
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-violet-600/10 blur-[100px] pointer-events-none" />

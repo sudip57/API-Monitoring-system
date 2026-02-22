@@ -22,7 +22,8 @@ async function getServiceStats(config){
     const {from,to,serviceName} = config;
     const now = Date.now();
     const match = {
-      "meta.projectKey": "test-project"
+      "meta.projectKey": "test-project",
+      timestamp:{ $gte: from, $lte: to }
     };
     if (serviceName) {
       match["meta.serviceName"] = serviceName;

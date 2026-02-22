@@ -1,6 +1,6 @@
-const getChartData = require("./chartDataController")
+const {getOverallChartData,getRouteChartData,getServiceChartData} = require("./chartDataController")
 const getResourceData = require("./resourceDataController")
 const getRouteStats = require("./routeStatsController")
 const getServiceStats = require("./serviceStatsController")
 const getStats = require("./statsController")
-module.exports = {getChartData,getResourceData,getRouteStats,getServiceStats,getStats}
+module.exports = {getResourceData,getRouteStats,getServiceStats,getStats,getOverallChartData,getRouteChartData,getServiceChartData}

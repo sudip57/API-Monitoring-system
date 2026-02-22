@@ -12,7 +12,8 @@ const chartDataSchema =  new mongoose.Schema({
 });
 chartDataSchema.index({
   projectKey: 1,
-  timestamp: 1
+  timestamp: 1,
+  type:1,
 });
 
 const chartDataModel = mainDB.model(

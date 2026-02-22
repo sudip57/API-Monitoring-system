@@ -23,7 +23,8 @@ const result = await serviceDataModel.aggregate([
 
   {
     $project: {
-         _id: 0,
+        _id: 0,
+        type:"allService",
         projectKey:"$_id",
         totalRequests: 1,
         totalErrors: 1,

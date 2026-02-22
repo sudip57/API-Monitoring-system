@@ -23,8 +23,6 @@ const RoutesPage = () => {
   const { serviceName } = useParams();
   const {data}=useRouteData({timeRange:timeRange.rangeMinutes,serviceName,routeName})
   const routeData = data?.routeData[0]
-  console.log("routedetaildata---",routeData.statusInfo)
-  
   return (
     <div className="min-h-screen bg-[#050507] text-zinc-300 p-8 font-sans">
       {/* 1. Navigation & Header */}
@@ -43,10 +41,10 @@ const RoutesPage = () => {
       {/* 2. Key Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Avg Latency", val: `${routeData?.avgLatency}`, icon: <Clock size={16} className="text-blue-400"/>, trend: "-12%" },
-          { label: "P95 Latency", val: `${routeData?.p95Latency}`, icon: <Zap size={16} className="text-amber-400"/>, trend: "+5%" },
-          { label: "Throughput", val: `${routeData?.throughPut}`, icon: <Activity size={16} className="text-emerald-400"/>, trend: "+18%" },
-          { label: "Error Rate", val: `${routeData?.errorRate}`, icon: <ShieldAlert size={16} className="text-rose-500"/>, trend: "-2%" },
+          { label: "Avg Latency", val: `${routeData?.avgLatency}`,unit:"ms", icon: <Clock size={16} className="text-blue-400"/>, trend: "-12%" },
+          { label: "P95 Latency", val: `${routeData?.p95Latency}`,unit:"ms", icon: <Zap size={16} className="text-amber-400"/>, trend: "+5%" },
+          { label: "Throughput", val: `${routeData?.throughPut}`,unit:"rps", icon: <Activity size={16} className="text-emerald-400"/>, trend: "+18%" },
+          { label: "Error Rate", val: `${routeData?.errorRate}`,icon: <ShieldAlert size={16} className="text-rose-500"/>, trend: "-2%" },
           { label: "Total Requests", val: `${routeData?.totalRequests}`, icon: <ShieldAlert size={16} className="text-rose-500"/>, trend: "-2%" },
         ].map((stat, i) => (
           <div key={i} className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl shadow-sm">
@@ -57,7 +55,7 @@ const RoutesPage = () => {
               </span>
             </div>
             <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">{stat.label}</p>
-            <p className="text-2xl font-mono font-bold text-white tracking-tighter">{stat.val}</p>
+            <p className="text-2xl font-mono font-bold text-white tracking-tighter">{stat.val} {stat.unit?stat.unit:""}</p>
           </div>
         ))}
       </div>
@@ -88,47 +86,14 @@ const RoutesPage = () => {
         <div className="col-span-12 lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
           <h3 className="text-sm font-bold text-white mb-6">Status Distribution</h3>
           <div className="space-y-4">
-            {routeData.statusInfo.map((s) => (
-              <div key={s}>
+            {routeData?.statusInfo?.map((s) => (
+              <div >
                 <div className="flex justify-between text-[11px] mb-1.5 font-mono">
                   <span className="text-zinc-300">{s.status}</span>
                   <span className="text-zinc-500">{s.count}</span>
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Secondary Insights */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-            <Globe size={16} className="text-blue-400" /> Regional Performance
-          </h3>
-          <div className="space-y-3">
-            <div className="flex justify-between text-xs py-2 border-b border-white/5">
-              <span>US-East-1</span>
-              <span className="font-mono text-emerald-400">42ms</span>
-            </div>
-            <div className="flex justify-between text-xs py-2 border-b border-white/5">
-              <span>EU-West-1</span>
-              <span className="font-mono text-amber-400">185ms</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-            <Monitor size={16} className="text-violet-400" /> Client Breakdown
-          </h3>
-          <div className="flex items-center gap-4">
-             <div className="flex-1 h-24 flex items-center justify-center border border-dashed border-white/10 rounded-xl">
-                <span className="text-[10px] uppercase font-bold text-zinc-600 tracking-widest">Mobile App: 65%</span>
-             </div>
-             <div className="flex-1 h-24 flex items-center justify-center border border-dashed border-white/10 rounded-xl">
-                <span className="text-[10px] uppercase font-bold text-zinc-600 tracking-widest">Web Browser: 35%</span>
-             </div>
           </div>
         </div>
       </div>

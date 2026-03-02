@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import TimeRangePicker from "../../../components/ui/TimeRangePicker";
 import RouteDetailsSection from "./RouteDetailsSection";
+import { trendFinder } from "../../../utils/trendFinder";
 function formatUptime(seconds) {
   const hrs = Math.floor(seconds / 3600);
   const min = Math.floor((seconds % 3600) / 60);
@@ -36,7 +37,6 @@ function findTrendValue(oldVal, newVal) {
   return (jump > 0 ? "+" : "") + jump.toFixed(2);
 }
 
-
 const SERVICE_META = {
   name: "auth-gateway-production",
   environment: "Production",
@@ -49,7 +49,6 @@ const SERVICE_META = {
 const ServiceDetailPage = () => {
   const { serviceName } = useParams();
   const { timeRange } = useAppContext();
-  const [prevMetrics, setPrevMetrics] = useState(null);
   const { data, loading, error } = useServiceData({
       timeRange: timeRange.rangeMinutes,serviceName:serviceName
     });
@@ -64,27 +63,8 @@ const ServiceDetailPage = () => {
       setresourceData(latest);
     }
   }, [latest]);
-
-  console.log("resource data---", resourceData);
-  const [trend, setTrend] = useState({
-    latency: 0,
-    errorRate: 0,
-    rps: 0,
-    p95Latency:0,
-  });
-console.log(serviceData)
-useEffect(() => {
-  setTrend(prev => {
-    if (!prevMetrics?.stats) return prev;
-    return {
-      latency: findTrendValue(prevMetrics?.stats.avgLatency, serviceData?.stats.avgLatency),
-      errorRate: findTrendValue(prevMetrics?.stats.errorRate, serviceData?.stats.errorRate),
-      rps: findTrendValue(prevMetrics?.stats.avgThroughPut, serviceData?.stats.avgThroughPut),
-      p95Latency: findTrendValue(prevMetrics?.stats.p95Latency, serviceData?.stats.p95Latency),
-    };
-  });
-  setPrevMetrics(serviceData)
-}, [serviceData]);
+  console.log("resource data---",serviceData);
+  const {trend} = trendFinder(serviceData.stats);
   console.log("-------", serviceData);
   if (!serviceData) {
     return (
@@ -96,7 +76,6 @@ useEffect(() => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-[#050508] text-zinc-300 p-6 font-sans">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">

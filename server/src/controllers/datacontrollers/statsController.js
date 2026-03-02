@@ -58,7 +58,7 @@ const result = await serviceDataModel.aggregate([
           0
         ]
       },
-      avgThroughput: {
+      avgThroughPut: {
         $round: [
           {
             $divide: [

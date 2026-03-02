@@ -1,8 +1,8 @@
 import React from 'react';
 import { 
-  Bell, BellOff, AlertTriangle, ShieldAlert, 
-  Settings, Plus, Search, Filter, 
-  ChevronRight, MoreVertical, CheckCircle2, Clock
+  Bell,AlertTriangle, ShieldAlert, 
+  Settings, Plus, Search, Filter,
+  MoreVertical, CheckCircle2, Clock
 } from 'lucide-react';
 
 // Hardcoded Alert Data

@@ -51,7 +51,7 @@ const KpiCard = ({
   title,
   value,
   unit,
-  change = 0,
+  change,
   loading = false,
   error = false,
 }) => {
@@ -61,39 +61,11 @@ const KpiCard = ({
     title: "text-white/60",
     accent: "text-white",
   };
-
   const base =
     "min-h-[120px] flex-1 rounded-xl relative overflow-hidden transition-all duration-300 " +
     "bg-[#0f0f15] border border-white/10 hover:border-white/20 ";
-
-  const prevValueRef = useRef(null);
-  const [trend, setTrend] = useState({ direction: "flat", percent: 0 });
-
-  // ✅ Track if we ever had valid data
   const [hasData, setHasData] = useState(false);
-
-  useEffect(() => {
-    if (value !== null && value !== undefined) {
-      setHasData(true);
-      if(prevValueRef.current !==null && typeof value=='number'){
-        const prev = prevValueRef.current;
-        const diff = value-prev;
-        let percent = 0;
-        if(prev!==0){
-          percent=(diff/prev)*100;
-        }
-        if (percent > 0.01) {
-          setTrend({ direction: "up", percent: percent });
-        } else if (percent < -0.01) {
-          setTrend({ direction: "down", percent: percent });
-        } else {
-          setTrend({ direction: "flat", percent: 0 });
-        }
-      }
-      prevValueRef.current = value;
-    }
-  }, [value]);
-
+  console.log(change)
   if (loading && !hasData) {
     return (
       <div className={`${base} p-5 animate-pulse`}>
@@ -148,9 +120,9 @@ const KpiCard = ({
         {change !== undefined && (
           <div
             className={`flex items-center gap-0.5 text-[10px] font-bold ${
-              change > 0
+              change < 0
                 ? "text-emerald-400"
-                : change < 0
+                : change > 0
                 ? "text-rose-400"
                 : "text-zinc-500"
             }`}
@@ -162,7 +134,7 @@ const KpiCard = ({
             ) : (
               <Minus size={10} />
             )}
-            {Math.abs(change)}%
+            {change}%
           </div>
         )}
       </div>

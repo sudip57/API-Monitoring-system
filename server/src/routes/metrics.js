@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {getRouteStats,getServiceStats,getStats,getOverallChartData,getRouteChartData,getServiceChartData,getLogs} = require("../controllers")
+const {getRouteStats,getServiceStats,getStats,getOverallChartData,getRouteChartData,getServiceChartData,getLogs,getErrors} = require("../controllers")
 router.get("/serviceData",async(req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
@@ -59,6 +59,19 @@ router.get("/logs",async (req,res)=>{
     const{page,limit} = req.query;
     // const logs = await getLogs(from,to);
     const data = await getLogs(
+    from,
+    to,
+    Number(page),
+    Number(limit)
+  );
+    res.json(data);
+})
+router.get("/errors",async (req,res)=>{
+    const from = new Date(req.timeRange.from);
+    const to = new Date(req.timeRange.to);
+    const{page,limit} = req.query;
+    // const logs = await getLogs(from,to);
+    const data = await getErrors(
     from,
     to,
     Number(page),

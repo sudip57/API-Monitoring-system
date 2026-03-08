@@ -1,48 +1,117 @@
 import { useEffect, useState, useRef } from "react";
 import { socket } from "../../socket/socket";
+import TimeRangePicker from "../../components/ui/TimeRangePicker";
+import { useAppContext } from "../../context/GlobalAppContext";
+import InfiniteScroll from "react-infinite-scroll-component";
 import {
   ChevronRight,
   Terminal,
+  Play,
+  Pause,
   Filter,
   Search,
   ArrowUpRight,
   ShieldX,
-  Bug
+  Bug,
 } from "lucide-react";
 
 const ErrorAnalysisPage = () => {
+  const { timeRange } = useAppContext();
+  const errorContainerRef = useRef(null);
+  const [openSocket, setopenSocket] = useState(false);
+  const isPinnedToBottomRef = useRef(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const socketHandler = (toggle) => {
+    if (toggle === "on") {
+      setopenSocket(true);
+      console.log("toggle on");
+    } else if (toggle === "off") {
+      setopenSocket(false);
+    }
+  };
   const [errors, setErrors] = useState([]);
   const roomId = "errors";
-  const scrollRef = useRef(null);
+  // const scrollRef = useRef(null);
+  const fetchErrors = async () => {
+    const res = await fetch(
+      `https://api-monitoring-system-szih.onrender.com/ranged/metrics/Errors?timeRange=${timeRange.rangeMinutes}&page=${page}&limit=50`,
+    );
+    const data = await res.json();
+    setErrors((prev) => [...prev, ...data.Errors]);
+    setHasMore(data.hasMore);
+  };
+  useEffect(() => {
+    setErrors([]);
+    setopenSocket(false);
+    setPage(1);
+    setHasMore(true);
+  }, [timeRange]);
 
   useEffect(() => {
+    fetchErrors();
+  }, [page, timeRange]);
+
+  useEffect(() => {
+    if (!openSocket) {
+      socket.disconnect();
+      return;
+    }
+    setErrors([]);
+
     if (!socket.connected) socket.connect();
-
-    socket.emit("errors-req-service", roomId);
-
+    socket.emit("Errors-req-service", roomId);
     const handler = (incomingErrors) => {
       setErrors((prev) => {
         const updated = [...prev, ...incomingErrors];
         return updated.slice(-500);
       });
     };
-
-    socket.on("errors-res-service", handler);
-
+    socket.on("Errors-res-service", handler);
     return () => {
-      socket.off("errors-res-service", handler);
+      socket.off("Errors-res-service", handler);
     };
+  }, [openSocket]);
+  useEffect(() => {
+    if (!openSocket) return;
+    const container = errorContainerRef.current;
+    if (!container) return;
+    const isNearBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight <
+      80;
+    if (isNearBottom) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, []);
 
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    el.scrollTo({
-      top: el.scrollHeight,
-      behavior: "smooth"
-    });
-  }, [errors]);
+    if (!openSocket) return;
+    const container = errorContainerRef.current;
+    if (!container) return;
+    if (isPinnedToBottomRef.current) {
+      requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+      });
+    }
+  }, [errors, openSocket]);
+  useEffect(() => {
+    if (!openSocket) {
+      socket.disconnect();
+      return;
+    }
+    if (!socket.connected) socket.connect();
+    socket.emit("errors-req-service", roomId);
+    const handler = (incomingErrors) => {
+      setErrors((prev) => {
+        const updated = [...prev, ...incomingErrors];
+        return updated.slice(-500);
+      });
+    };
+    socket.on("errors-res-service", handler);
+    return () => {
+      socket.off("errors-res-service", handler);
+    };
+  }, [openSocket]);
 
   return (
     <div className="h-screen bg-[#050508] text-zinc-300 p-8 flex flex-col overflow-hidden">
@@ -59,8 +128,28 @@ const ErrorAnalysisPage = () => {
             </p>
           </div>
         </div>
-
-        <div className="text-right">
+        <div className="text-right flex gap-5 justify-center items-center">
+          <TimeRangePicker />
+          <div className="flex bg-white/[0.03] border border-white/10 rounded-xl p-1">
+            <button className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all">
+              <Play
+                size={16}
+                fill="currentColor"
+                onClick={() => {
+                  socketHandler("on");
+                }}
+              />
+            </button>
+            <button className="p-2 rounded-lg text-zinc-500 hover:text-white transition-all">
+              <Pause
+                size={16}
+                fill="currentColor"
+                onClick={() => {
+                  socketHandler("off");
+                }}
+              />
+            </button>
+          </div>
           <p className="text-[10px] text-zinc-500 uppercase font-black">
             Total Errors
           </p>
@@ -92,9 +181,17 @@ const ErrorAnalysisPage = () => {
           <div className="w-16"></div>
         </div>
         <div
-          ref={scrollRef}
+          id="error-scroll-container" ref={errorContainerRef}
           className="flex-1 min-h-0 overflow-y-auto font-mono text-[12px]"
         >
+          <InfiniteScroll
+                      dataLength={errors.length}
+                      next={() =>!openSocket&&setPage(prev => prev + 1)}
+                      hasMore={hasMore}
+                      loader={<div className="p-4 text-center text-zinc-500">Loading errors...</div>}
+                      endMessage={<p>No more data</p>}
+                      scrollableTarget="error-scroll-container"
+                    >
           {errors.map((err) => (
             <div
               key={err._id}
@@ -128,6 +225,7 @@ const ErrorAnalysisPage = () => {
               </div>
             </div>
           ))}
+          </InfiniteScroll>
         </div>
         <div className="px-6 py-4 bg-white/[0.01] border-t border-white/5 flex justify-between items-center shrink-0">
           <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
@@ -137,7 +235,6 @@ const ErrorAnalysisPage = () => {
             Load More <ArrowUpRight size={12} />
           </div>
         </div>
-
       </div>
     </div>
   );

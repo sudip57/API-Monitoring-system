@@ -15,7 +15,9 @@ const LogExplorerPage = () => {
   const [logs, setLogs] = useState([]);
   const logContainerRef = useRef(null);
   const [openSocket, setopenSocket] = useState(false);
-  const [pageCount, setpageCount] = useState(0)
+  const isPinnedToBottomRef = useRef(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const socketHandler = (toggle)=>{
     if(toggle==="on"){
       setopenSocket(true);
@@ -25,21 +27,27 @@ const LogExplorerPage = () => {
     }
   }
   const roomId="logs";
-  useEffect(() => {
-    setopenSocket(false);
-    const fetchData = async()=>{
-      const res = await fetch(`https://api-monitoring-system-szih.onrender.com/ranged/metrics/logs?timeRange=${timeRange.rangeMinutes}`);
-      const data = await res.json();
-      console.log(data?.logs?.length)
+  const fetchLogs = async()=>{
+    const res = await fetch(`https://api-monitoring-system-szih.onrender.com/ranged/metrics/logs?timeRange=${timeRange.rangeMinutes}&page=${page}&limit=50`);
+    const data = await res.json();
+    setLogs(prev => [...prev, ...data.logs]);
+    setHasMore(data.hasMore);
     }
-    fetchData()
+  useEffect(() => {
+    setLogs([]);
+    setopenSocket(false);
+    setPage(1);
+    setHasMore(true);
   }, [timeRange])
-  console.log(pageCount);
+    useEffect(() => {
+    fetchLogs();
+  }, [page,timeRange]);
   useEffect(() => {
     if(!openSocket){
       socket.disconnect();
       return;
     }
+    setLogs([]);
     if (!socket.connected) socket.connect();
     socket.emit("logs-req-service", roomId);
     const handler = (incomingLogs)=>{
@@ -55,11 +63,27 @@ const LogExplorerPage = () => {
   
   },[openSocket])
   useEffect(() => {
-  logContainerRef.current?.scrollTo({
-    top: logContainerRef.current.scrollHeight,
-    behavior: "smooth",
-  });
-}, [logs]);
+  if (!openSocket) return;
+  const container = logContainerRef.current;
+  if (!container) return;
+  const isNearBottom =
+    container.scrollHeight - container.scrollTop - container.clientHeight < 80;
+  if (isNearBottom) {
+    container.scrollTop = container.scrollHeight;
+  }
+}, []);
+
+useEffect(() => {
+  if (!openSocket) return;
+  const container = logContainerRef.current;
+  if (!container) return;
+  if (isPinnedToBottomRef.current) {
+    requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight;
+    });
+  }
+}, [logs, openSocket]);
+
   return (
     <div className="min-h-screen bg-[#050508] text-zinc-300 p-6 flex flex-col h-screen overflow-hidden">
       
@@ -129,13 +153,15 @@ const LogExplorerPage = () => {
         </div>
 
         {/* Scrollable Area */}
-        <div ref={logContainerRef} className="flex-1 overflow-y-auto font-mono text-[12px] leading-relaxed custom-scrollbar">
+        <div id="log-scroll-container" ref={logContainerRef} className="flex-1 overflow-y-auto font-mono text-[12px] leading-relaxed custom-scrollbar">
           <InfiniteScroll
-          dataLength={this.state.items.length}
-          next={this.fetchMoreData}
-          hasMore={true}
-          loader={<h4>Loading...</h4>}
-        >
+            dataLength={logs.length}
+            next={() =>!openSocket&&setPage(prev => prev + 1)}
+            hasMore={hasMore}
+            loader={<div className="p-4 text-center text-zinc-500">Loading logs...</div>}
+            endMessage={<p>No more logs</p>}
+            scrollableTarget="log-scroll-container"
+          >
           {logs.map((log) => (
             <div 
               key={log._id} 

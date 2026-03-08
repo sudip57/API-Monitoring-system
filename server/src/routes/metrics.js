@@ -56,10 +56,15 @@ router.get("/chartData/service",async (req,res)=>{
 router.get("/logs",async (req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
-    const logs = await getLogs(from,to);
-    res.send({
-        logs
-    });
+    const{page,limit} = req.query;
+    // const logs = await getLogs(from,to);
+    const data = await getLogs(
+    from,
+    to,
+    Number(page),
+    Number(limit)
+  );
+    res.json(data);
 })
 
 module.exports = router

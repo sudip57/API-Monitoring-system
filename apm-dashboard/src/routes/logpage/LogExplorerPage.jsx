@@ -1,6 +1,7 @@
 import {React,useState,useEffect,useRef} from 'react';
 import { socket } from '../../socket/socket';
 import TimeRangePicker from '../../components/ui/TimeRangePicker'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import { 
   Search, Filter, Download, Terminal, 
   Clock, Play, Pause, ChevronRight, 
@@ -14,6 +15,7 @@ const LogExplorerPage = () => {
   const [logs, setLogs] = useState([]);
   const logContainerRef = useRef(null);
   const [openSocket, setopenSocket] = useState(false);
+  const [pageCount, setpageCount] = useState(0)
   const socketHandler = (toggle)=>{
     if(toggle==="on"){
       setopenSocket(true);
@@ -25,13 +27,14 @@ const LogExplorerPage = () => {
   const roomId="logs";
   useEffect(() => {
     setopenSocket(false);
-    
-  
-    return () => {
-
+    const fetchData = async()=>{
+      const res = await fetch(`https://api-monitoring-system-szih.onrender.com/ranged/metrics/logs?timeRange=${timeRange.rangeMinutes}`);
+      const data = await res.json();
+      console.log(data?.logs?.length)
     }
+    fetchData()
   }, [timeRange])
-  
+  console.log(pageCount);
   useEffect(() => {
     if(!openSocket){
       socket.disconnect();
@@ -57,7 +60,6 @@ const LogExplorerPage = () => {
     behavior: "smooth",
   });
 }, [logs]);
-  console.log(logs)
   return (
     <div className="min-h-screen bg-[#050508] text-zinc-300 p-6 flex flex-col h-screen overflow-hidden">
       
@@ -128,6 +130,12 @@ const LogExplorerPage = () => {
 
         {/* Scrollable Area */}
         <div ref={logContainerRef} className="flex-1 overflow-y-auto font-mono text-[12px] leading-relaxed custom-scrollbar">
+          <InfiniteScroll
+          dataLength={this.state.items.length}
+          next={this.fetchMoreData}
+          hasMore={true}
+          loader={<h4>Loading...</h4>}
+        >
           {logs.map((log) => (
             <div 
               key={log._id} 
@@ -159,6 +167,7 @@ const LogExplorerPage = () => {
               </div>
             </div>
           ))}
+          </InfiniteScroll>
         </div>
       </div>
     </div>

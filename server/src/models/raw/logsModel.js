@@ -11,7 +11,7 @@ const logEventSchema = new Schema(
     event: { type: mongoose.Schema.Types.Mixed }
   },{ strict: false }
 );
-
+logEventSchema.index({ timestamp: -1});
 const logEventModel = mainDB.model(
   "logs",
   logEventSchema,

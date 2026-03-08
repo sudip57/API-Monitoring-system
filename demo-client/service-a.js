@@ -8,12 +8,13 @@ initialize({
   env: "development",
 },app);
 app.get("/user/:id", async (req, res, next) => {
+logger('this is a test logger',{level:"info",test:"test"})
 logger('hello',req.apm.traceId);
   if (req.params.id === "500") {
     throw new Error("Forced test error in /user/:id");
   }
   try {
-    const serviceATrace = {
+    const serviceATrace = { 
       service: "service-a",
       traceId: req.apm?.traceId || null,
       spanId: req.apm?.spanId || null,

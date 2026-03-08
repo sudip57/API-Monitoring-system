@@ -28,15 +28,6 @@ function formatUptime(seconds) {
     +min.toString().padStart(2, "0") + "m",
   ].join(" : ");
 }
-function findTrendValue(oldVal, newVal) {
-  const oldRate = Number(oldVal);
-  const newRate = Number(newVal);
-  if (isNaN(oldRate) || isNaN(newRate)) return "0.00";
-  if (oldRate === 0) return newRate === 0 ? "0.00" : "+100.00";
-  const jump = ((newRate - oldRate) / oldRate) * 100;
-  return (jump > 0 ? "+" : "") + jump.toFixed(2);
-}
-
 const SERVICE_META = {
   name: "auth-gateway-production",
   environment: "Production",
@@ -64,7 +55,7 @@ const ServiceDetailPage = () => {
     }
   }, [latest]);
   console.log("resource data---",serviceData);
-  const {trend} = trendFinder(serviceData.stats);
+  const {trend} = trendFinder(serviceData?.stats);
   console.log("-------", serviceData);
   if (!serviceData) {
     return (

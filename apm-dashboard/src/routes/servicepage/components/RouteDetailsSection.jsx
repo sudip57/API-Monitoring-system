@@ -82,7 +82,7 @@ const RouteDetailsSection = ({ serviceName }) => {
               {/* Throughput Metric */}
               <div className="col-span-2 flex flex-col items-center">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-sm font-mono font-bold text-zinc-100">{r.throughPut}</span>
+                  <span className="text-sm font-mono font-bold text-zinc-100">{r.avgThroughPut}</span>
                   <span className="text-[9px] text-zinc-600 font-bold uppercase">rps</span>
                 </div>
               </div>

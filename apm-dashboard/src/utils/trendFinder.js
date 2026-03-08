@@ -24,6 +24,7 @@ useEffect(() => {
       errorRate: findTrendValue(prevMetrics?.errorRate, Data?.errorRate),
       rps: findTrendValue(prevMetrics?.avgThroughPut, Data?.avgThroughPut),
       p95Latency: findTrendValue(prevMetrics?.p95Latency, Data?.p95Latency),
+      totalRequests: findTrendValue(prevMetrics?.totalRequests,Data?.totalRequests),
     };
   });
   setPrevMetrics(Data)

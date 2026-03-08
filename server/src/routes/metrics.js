@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {getRouteStats,getServiceStats,getStats,getOverallChartData,getRouteChartData,getServiceChartData} = require("../controllers")
+const {getRouteStats,getServiceStats,getStats,getOverallChartData,getRouteChartData,getServiceChartData,getLogs} = require("../controllers")
 router.get("/serviceData",async(req,res)=>{
     const from = new Date(req.timeRange.from);
     const to = new Date(req.timeRange.to);
@@ -53,4 +53,13 @@ router.get("/chartData/service",async (req,res)=>{
         chartData
     });
 })
+router.get("/logs",async (req,res)=>{
+    const from = new Date(req.timeRange.from);
+    const to = new Date(req.timeRange.to);
+    const logs = await getLogs(from,to);
+    res.send({
+        logs
+    });
+})
+
 module.exports = router

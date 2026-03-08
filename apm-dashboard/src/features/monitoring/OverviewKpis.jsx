@@ -9,10 +9,11 @@ export default function OverviewKpis() {
   const {trend} = trendFinder(data);
   console.log("trend---------",trend)
   return (
-  <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
     <KpiCard
       title="Total Requests"
       value={data?.totalRequests}
+      change={trend?.totalRequests}
       loading={loading}
       error={error}
       rangeMinutes={timeRange.rangeMinutes}
@@ -38,7 +39,7 @@ export default function OverviewKpis() {
       rangeMinutes={timeRange.rangeMinutes}
     />
 
-    <KpiCard
+    {/* <KpiCard
       title="P95 Latency"
       value={data?.p95Latency}
       change={trend.p95Latency}
@@ -50,13 +51,13 @@ export default function OverviewKpis() {
 
     <KpiCard
       title="Throughput"
-      value={data?.avgThroughput}
+      value={data?.avgThroughPut}
       unit="rps"
       change={trend.rps}
       loading={loading}
       error={error}
       rangeMinutes={timeRange.rangeMinutes}
-    />
+    /> */}
   </div>
 
   );

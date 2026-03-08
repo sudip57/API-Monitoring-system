@@ -1,20 +1,63 @@
-import React from 'react';
+import {React,useState,useEffect,useRef} from 'react';
+import { socket } from '../../socket/socket';
+import TimeRangePicker from '../../components/ui/TimeRangePicker'
 import { 
   Search, Filter, Download, Terminal, 
   Clock, Play, Pause, ChevronRight, 
   Layers, HardDrive, Cpu, Info, AlertTriangle, AlertOctagon 
 } from 'lucide-react';
+import { useAppContext } from '../../context/GlobalAppContext';
 
-// Hardcoded Log Data
-const LOG_ENTRIES = [
-  { id: 1, ts: "2024-05-20 14:22:01.452", level: "INFO", service: "auth-gateway", message: "Successfully authenticated user 88291", traceId: "b31...f2" },
-  { id: 2, ts: "2024-05-20 14:22:03.110", level: "WARN", service: "payment-processor", message: "Retry attempt 1 for Stripe API: Connection timeout", traceId: "a12...d9" },
-  { id: 3, ts: "2024-05-20 14:22:04.891", level: "ERROR", service: "inventory-db", message: "Query failed: SELECT * FROM stock WHERE id = 'xyz' - Deadlock detected", traceId: "c88...e1" },
-  { id: 4, ts: "2024-05-20 14:22:05.002", level: "DEBUG", service: "auth-gateway", message: "Cache hit for session_id: sess_9912", traceId: "b31...f2" },
-  { id: 5, ts: "2024-05-20 14:22:06.124", level: "INFO", service: "auth-gateway", message: "Incoming request: POST /api/v1/logout", traceId: "d44...a2" },
-];
 
 const LogExplorerPage = () => {
+  const {timeRange} = useAppContext();
+  const [logs, setLogs] = useState([]);
+  const logContainerRef = useRef(null);
+  const [openSocket, setopenSocket] = useState(false);
+  const socketHandler = (toggle)=>{
+    if(toggle==="on"){
+      setopenSocket(true);
+      console.log("toggle on")
+    }else if(toggle==="off"){
+      setopenSocket(false);
+    }
+  }
+  const roomId="logs";
+  useEffect(() => {
+    setopenSocket(false);
+    
+  
+    return () => {
+
+    }
+  }, [timeRange])
+  
+  useEffect(() => {
+    if(!openSocket){
+      socket.disconnect();
+      return;
+    }
+    if (!socket.connected) socket.connect();
+    socket.emit("logs-req-service", roomId);
+    const handler = (incomingLogs)=>{
+      setLogs((prev) => {
+        const updated = [...prev,...incomingLogs];
+        return updated.slice(-500);
+      });
+    }
+    socket.on("logs-res-service", handler);
+     return () => {
+    socket.off("logs-res-service", handler);
+  };
+  
+  },[openSocket])
+  useEffect(() => {
+  logContainerRef.current?.scrollTo({
+    top: logContainerRef.current.scrollHeight,
+    behavior: "smooth",
+  });
+}, [logs]);
+  console.log(logs)
   return (
     <div className="min-h-screen bg-[#050508] text-zinc-300 p-6 flex flex-col h-screen overflow-hidden">
       
@@ -29,14 +72,15 @@ const LogExplorerPage = () => {
             <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-black mt-0.5">Streaming 4,200 events/sec</p>
           </div>
         </div>
-
+        
         <div className="flex items-center gap-2">
+          <TimeRangePicker/>
            <div className="flex bg-white/[0.03] border border-white/10 rounded-xl p-1">
               <button className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all">
-                <Play size={16} fill="currentColor" />
+                <Play size={16} fill="currentColor" onClick={()=>{socketHandler("on")}} />
               </button>
               <button className="p-2 rounded-lg text-zinc-500 hover:text-white transition-all">
-                <Pause size={16} fill="currentColor" />
+                <Pause size={16} fill="currentColor" onClick={()=>{socketHandler("off")}} />
               </button>
            </div>
            <button className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] border border-white/10 rounded-xl text-xs font-bold uppercase hover:bg-white/[0.08] transition-all">
@@ -83,31 +127,32 @@ const LogExplorerPage = () => {
         </div>
 
         {/* Scrollable Area */}
-        <div className="flex-1 overflow-y-auto font-mono text-[12px] leading-relaxed custom-scrollbar">
-          {LOG_ENTRIES.map((log) => (
+        <div ref={logContainerRef} className="flex-1 overflow-y-auto font-mono text-[12px] leading-relaxed custom-scrollbar">
+          {logs.map((log) => (
             <div 
-              key={log.id} 
+              key={log._id} 
               className="flex items-start border-b border-white/[0.02] hover:bg-white/[0.02] py-2.5 px-4 transition-colors group cursor-text"
             >
-              <div className="w-48 shrink-0 text-zinc-500">{log.ts}</div>
+              <div className="w-48 shrink-0 text-zinc-500">{new Date(log.timestamp).toLocaleTimeString()}</div>
               
               <div className="w-24 shrink-0 px-4 flex justify-center">
                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-black flex items-center gap-1
-                  ${log.level === 'ERROR' ? 'bg-rose-500/10 text-rose-500' : 
-                    log.level === 'WARN' ? 'bg-amber-500/10 text-amber-500' : 
-                    log.level === 'DEBUG' ? 'bg-blue-500/10 text-blue-400' : 'bg-zinc-500/10 text-zinc-400'}
+                  ${log.level === 'error' ? 'bg-rose-500/10 text-rose-500' : 
+                    log.level === 'warn' ? 'bg-amber-500/10 text-amber-500' : 
+                    log.level === 'debug' ? 'bg-blue-500/10 text-blue-400' : 'bg-zinc-500/10 text-zinc-400'}
                 `}>
-                  {log.level === 'ERROR' && <AlertOctagon size={10} />}
-                  {log.level === 'WARN' && <AlertTriangle size={10} />}
-                  {log.level === 'INFO' && <Info size={10} />}
+                  {log.level === 'error' && <AlertOctagon size={10} />}
+                  {log.level === 'warn' && <AlertTriangle size={10} />}
+                  {log.level === 'info' && <Info size={10} />}
                   {log.level}
                 </span>
               </div>
 
-              <div className="w-40 shrink-0 px-4 text-violet-400 font-bold opacity-80 group-hover:opacity-100">{log.service}</div>
+              <div className="w-40 shrink-0 px-4 text-violet-400 font-bold opacity-80 group-hover:opacity-100">{log.meta.serviceName}</div>
               
               <div className="flex-1 text-zinc-300 group-hover:text-white break-all">
                 {log.message}
+                {log.test}
                 <span className="ml-3 text-[10px] text-zinc-700 font-bold hidden group-hover:inline-block cursor-pointer hover:text-violet-500 transition-colors">
                   TRACE: {log.traceId} <ChevronRight size={10} className="inline" />
                 </span>

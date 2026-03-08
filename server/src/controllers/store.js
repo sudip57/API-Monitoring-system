@@ -21,7 +21,8 @@ function extractFields(event) {
     "uptimeSec",
     "network",
     "parentUrl",
-    "parentRootId"
+    "parentRootId",
+    "logMeta",
   ];
 
   const result = {};
@@ -43,7 +44,7 @@ function normalizeDate(value) {
   return new Date();
 }
 
-async function saveEvents(events) {
+async function saveEvents(events,io) {
   const requests = [];
   const errors = [];
   const spans = [];
@@ -114,8 +115,16 @@ async function saveEvents(events) {
   }
 
 if (requests.length) await requestEventModel.insertMany(requests);
-if (errors.length) await errorEventModel.insertMany(errors);
-if (logs.length) await logEventModel.insertMany(logs);
+if (errors.length) {
+  const insertedErrors=  await errorEventModel.insertMany(errors);
+  console.log("incoming errors",insertedErrors)
+  io.to("errors").emit("errors-res-service", insertedErrors);
+}
+if (logs.length) {
+  const insertedLogs = await logEventModel.insertMany(logs);
+  console.log(insertedLogs)
+  io.to("logs").emit("logs-res-service", insertedLogs);
+}
 if (spans.length) await spanEventModel.insertMany(spans);
 if (resourceMetrics.length) {
   const resourceMetricsModel = require("../models/raw/resourceMetricsModel");

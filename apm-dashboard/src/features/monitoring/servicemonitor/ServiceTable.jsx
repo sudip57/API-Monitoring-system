@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import { useServiceData } from '../../../services/useServiceData'
+import { useNavigate } from "react-router-dom";
 import { Server, Activity, AlertCircle, RefreshCw, ArrowUpRight } from "lucide-react";
 import { useAppContext } from "../../../context/GlobalAppContext";
 
 const ServiceTable = () => {
+const navigate = useNavigate();
+function handleOnclick(){
+ navigate('/services')
+}
   const { timeRange } = useAppContext();
   const { data, loading, error } = useServiceData({timeRange:timeRange.rangeMinutes});
   
@@ -53,7 +58,7 @@ const ServiceTable = () => {
           </div>
         </div>
 
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-[10px] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all font-bold uppercase tracking-tighter">
+        <button onClick={handleOnclick}  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-[10px] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all font-bold uppercase tracking-tighter">
           Full Metrics <ArrowUpRight size={12} />
         </button>
       </div>

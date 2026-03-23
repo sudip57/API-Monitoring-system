@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const {getResourceData} = require("../controllers")
 router.get("/", async (req, res) => {
-const data = await getResourceData({projectKey:req.query.projectKey,serviceName:req.query.serviceName})
-const plaindata = data.map(d=>d.toObject());
+const rawdata = await getResourceData({projectKey:req.query.projectKey,serviceName:req.query.serviceName})
+const data = rawdata.map(d=>d.toObject());
 res.json({
-    plaindata,
+    data,
   });
 });
 module.exports = router;

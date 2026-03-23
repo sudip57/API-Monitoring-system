@@ -6,7 +6,7 @@ export function useLiveMetrics(props) {
   const { projectKey, serviceName } = props;
   const lastTimestampRef = useRef(null);
   
-  let url = `https://api-monitoring-system-szih.onrender.com/resourcedata?`;
+  let url = `https://api-monitoring-system-szih.onrender.com/resourceData?`;
   if (projectKey) url += `projectKey=${projectKey}`;
   if (serviceName) url += `${projectKey ? '&' : ''}serviceName=${serviceName}`;
   

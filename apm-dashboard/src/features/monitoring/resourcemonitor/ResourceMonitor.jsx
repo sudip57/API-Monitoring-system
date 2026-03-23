@@ -5,7 +5,7 @@ import { MemoryChart } from "./components/MemoryChart";
 
 export default function ResourceMonitor() {
   const { latest, series } = useLiveMetrics({ projectKey: "test-project" });
-  
+  console.log("-----------------",series)
   if (!latest) {
     return <p className="text-white">Loading...</p>;
   }

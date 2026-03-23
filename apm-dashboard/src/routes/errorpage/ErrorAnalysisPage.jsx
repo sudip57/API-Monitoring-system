@@ -32,13 +32,12 @@ const ErrorAnalysisPage = () => {
   };
   const [errors, setErrors] = useState([]);
   const roomId = "errors";
-  // const scrollRef = useRef(null);
   const fetchErrors = async () => {
     const res = await fetch(
       `https://api-monitoring-system-szih.onrender.com/ranged/metrics/Errors?timeRange=${timeRange.rangeMinutes}&page=${page}&limit=50`,
     );
     const data = await res.json();
-    setErrors((prev) => [...prev, ...data.Errors]);
+    setErrors((prev) => [...prev, ...data.errors]);
     setHasMore(data.hasMore);
   };
   useEffect(() => {
@@ -72,17 +71,20 @@ const ErrorAnalysisPage = () => {
       socket.off("Errors-res-service", handler);
     };
   }, [openSocket]);
-  useEffect(() => {
-    if (!openSocket) return;
-    const container = errorContainerRef.current;
-    if (!container) return;
+
+useEffect(() => {
+  const container = errorContainerRef.current;
+  if (!container) return;
+  const handleScroll = () => {
+    const threshold = 80;
     const isNearBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight <
-      80;
-    if (isNearBottom) {
-      container.scrollTop = container.scrollHeight;
-    }
-  }, []);
+      container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+
+    isPinnedToBottomRef.current = isNearBottom;
+  };
+  container.addEventListener("scroll", handleScroll);
+  return () => container.removeEventListener("scroll", handleScroll);
+}, []);
 
   useEffect(() => {
     if (!openSocket) return;
@@ -94,6 +96,7 @@ const ErrorAnalysisPage = () => {
       });
     }
   }, [errors, openSocket]);
+  
   useEffect(() => {
     if (!openSocket) {
       socket.disconnect();

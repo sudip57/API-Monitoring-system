@@ -2,7 +2,6 @@ const requestEventModel = require("../models/raw/requestEventModel");
 const errorEventModel = require("../models/raw/errorEventModel");
 const spanEventModel = require("../models/raw/spanEvents")
 const logEventModel = require("../models/raw/logsModel")
-
 function extractFields(event) {
   const COMMON_FIELDS = [
     "traceId",
@@ -88,7 +87,7 @@ async function saveEvents(events,io) {
        ...extractFields(event)
       });
     }
-
+    
     // CHILD SPAN
     if (event.info === "childSpan"||event.info === "rootSpan") {
       spans.push({
@@ -122,8 +121,14 @@ if (errors.length) {
 }
 if (logs.length) {
   const insertedLogs = await logEventModel.insertMany(logs);
+  const plainLogs = insertedLogs.map(log => log.toObject());
   console.log(insertedLogs)
-  io.to("logs").emit("logs-res-service", insertedLogs);
+  plainLogs.map((log)=>{
+    const serviceId = log.meta.serviceName;
+    console.log("service---------------",log)
+    io.to(`service:${serviceId}`).emit("logs-res-by-service", [log]);
+  })
+  io.to("logs").emit("logs-res-service", plainLogs);
 }
 if (spans.length) await spanEventModel.insertMany(spans);
 if (resourceMetrics.length) {

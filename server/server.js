@@ -24,6 +24,10 @@ const io = new Server(server,{
 app.set("io", io);
 io.on("connection", (socket) => {
   console.log("Client Connected:", socket.id);
+  socket.on("service-logs",(serviceId)=>{
+    console.log("service-id----",serviceId)
+    socket.join(`service:${serviceId}`)
+  })
   socket.on("logs-req-service", (roomId) => {
     socket.join(roomId);
   });

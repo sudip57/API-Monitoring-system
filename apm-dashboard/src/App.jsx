@@ -29,9 +29,11 @@ function App() {
   
   return (
     <AppProvider value={contextValue}>
+      <div className="custom-scrollbar">
       <Layout>
         <Outlet />
       </Layout>
+      </div>
     </AppProvider>
   )
 }

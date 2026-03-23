@@ -3,7 +3,6 @@ import { TrendingUp, TrendingDown, Minus, Loader2 } from "lucide-react";
 
 const formatValue = (value, unit) => {
   if (value === null || value === undefined) return "—";
-
   if (typeof value === "number") {
     if (unit === "%") return value.toFixed(2);
     if (unit === "ms") return Math.round(value);

@@ -62,15 +62,23 @@ const LogExplorerPage = () => {
   };
   
   },[openSocket])
-  useEffect(() => {
-  if (!openSocket) return;
+  
+useEffect(() => {
   const container = logContainerRef.current;
   if (!container) return;
-  const isNearBottom =
-    container.scrollHeight - container.scrollTop - container.clientHeight < 80;
-  if (isNearBottom) {
-    container.scrollTop = container.scrollHeight;
-  }
+
+  const handleScroll = () => {
+    const threshold = 80;
+
+    const isNearBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+
+    isPinnedToBottomRef.current = isNearBottom;
+  };
+
+  container.addEventListener("scroll", handleScroll);
+
+  return () => container.removeEventListener("scroll", handleScroll);
 }, []);
 
 useEffect(() => {

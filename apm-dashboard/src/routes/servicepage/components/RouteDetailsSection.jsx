@@ -93,7 +93,7 @@ const RouteDetailsSection = ({ serviceName }) => {
                   {r.p95Latency}
                 </span>
                 <span className="text-[10px] text-zinc-700 font-bold">/</span>
-                <span className="text-xs font-mono text-zinc-500">
+                <span className="text-xs font-bold text-zinc-300">
                   {r.avgLatency}
                 </span>
               </div>

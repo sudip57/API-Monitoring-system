@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useAppContext } from "../../../context/GlobalAppContext";
 import { useLiveMetrics } from "../../../services/useLiveMetrics";
 import { useServiceData } from "../../../services/useServiceData";
+
 import {
   Activity,
   ShieldCheck,
@@ -20,6 +21,7 @@ import {
 import TimeRangePicker from "../../../components/ui/TimeRangePicker";
 import RouteDetailsSection from "./RouteDetailsSection";
 import { trendFinder } from "../../../utils/trendFinder";
+import LogExplorer from "./LogExplorer";
 function formatUptime(seconds) {
   const hrs = Math.floor(seconds / 3600);
   const min = Math.floor((seconds % 3600) / 60);
@@ -40,6 +42,8 @@ const SERVICE_META = {
 const ServiceDetailPage = () => {
   const { serviceName } = useParams();
   const { timeRange } = useAppContext();
+  
+  const roomId = "service-b"
   const { data, loading, error } = useServiceData({
       timeRange: timeRange.rangeMinutes,serviceName:serviceName
     });
@@ -49,7 +53,8 @@ const ServiceDetailPage = () => {
     projectKey: "test-project",
     serviceName,
   });
-  useEffect(() => {
+
+    useEffect(() => {
     if (latest) {
       setresourceData(latest);
     }
@@ -170,50 +175,7 @@ const ServiceDetailPage = () => {
         <div className="lg:col-span-2 space-y-6">
           
           <RouteDetailsSection serviceName={serviceName}/>
-          <div className="bg-[#0c0c12] border border-white/10 rounded-2xl p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <AlertTriangle size={16} className="text-amber-500" />
-                Recent Anomalies
-              </h3>
-              <button className="text-xs text-violet-400 font-bold hover:underline">
-                Full Log Report
-              </button>
-            </div>
-
-            {/* Hardcoded Log Samples */}
-            <div className="space-y-3">
-              {[
-                {
-                  time: "14:22:01",
-                  msg: "DNS Resolution Timeout on external API: Stripe",
-                  level: "Warning",
-                },
-                {
-                  time: "14:18:55",
-                  msg: "Memory usage exceeded 85% threshold on node-04",
-                  level: "Critical",
-                },
-              ].map((log, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-4 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-xs font-mono"
-                >
-                  <span className="text-zinc-600">{log.time}</span>
-                  <span
-                    className={
-                      log.level === "Critical"
-                        ? "text-rose-500"
-                        : "text-amber-500"
-                    }
-                  >
-                    [{log.level}]
-                  </span>
-                  <span className="text-zinc-400">{log.msg}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <LogExplorer serviceName={serviceName}/>
         </div>
 
         {/* Right 1 Column: Infrastructure & Metadata */}

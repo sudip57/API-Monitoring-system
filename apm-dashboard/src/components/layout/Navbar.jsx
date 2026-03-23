@@ -34,7 +34,7 @@ const Navbar = ({ open, setOpen }) => {
 
 
   return (
-    <header className="h-16 px-3 sm:px-6 flex items-center justify-between bg-[#111111] border-b border-white/10 sticky top-0 z-40 backdrop-blur-xl">
+    <header className="h-16 sm:ml-18 px-3 sm:px-6 flex items-center justify-between bg-[#111111] border-b border-white/10 sticky top-0 z-40 backdrop-blur-xl">
       
       {/* Left Section */}
       <div className="flex items-center gap-2 sm:gap-3">

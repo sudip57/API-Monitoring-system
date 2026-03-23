@@ -9,17 +9,15 @@ const Layout = ({ children }) => {
   return (
     <div className=" bg-[#0b0b0f] text-white">
       
+      <Navbar open={open} setOpen={setOpen} />
 
-      <Sidebar open={open} setOpen={setOpen} />
-
-      <div className="flex flex-col sm:ml-64 transition-all duration-300">
-        
-        <Navbar open={open} setOpen={setOpen} />
-
-        <main className="flex-1 overflow-auto ">
+      <div className="flex flex-col transition-all duration-300">
+        <Sidebar open={open} setOpen={setOpen} />
+        <div>
+        <main className="flex-1 sm:ml-18 overflow-auto ">
           {children}
         </main>
-
+        </div>
         <Footer />
       </div>
     </div>

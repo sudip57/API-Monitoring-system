@@ -7,6 +7,7 @@ initialize({
   env: "development",
 },app);
 app.get("/orders/:id", async (req, res, next) => {
+  logger("this is service-b logger",{level:"warn"})
   try {
     // simulate async work
     await new Promise(r => setTimeout(r, 50));
